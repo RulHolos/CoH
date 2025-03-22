@@ -1,0 +1,30 @@
+{
+    "automappingRulesFile": "",
+    "commands": [
+        {
+            "arguments": "",
+            "command": "",
+            "enabled": true,
+            "name": "Collide",
+            "saveBeforeExecute": true,
+            "shortcut": null,
+            "showOutput": true,
+            "workingDirectory": ""
+        }
+    ],
+    "compatibilityVersion": 1100,
+    "extensionsPath": "extensions",
+    "folders": [
+        "."
+    ],
+    "properties": [
+        {
+            "name": "Collide",
+            "propertytype": "",
+            "type": "bool",
+            "value": false
+        }
+    ],
+    "propertyTypes": [
+    ]
+}

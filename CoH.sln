@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoH", "CoH\CoH.csproj", "{C7AAA2E4-1183-4F74-99EC-EE975B372D7A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rlImGui", "..\..\..\..\..\Programmation\Moteurs\Weave\rlImGui-cs\rlImGui\rlImGui.csproj", "{EA3D558A-7ECC-4C34-9FC4-AD1038600E46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{C7AAA2E4-1183-4F74-99EC-EE975B372D7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7AAA2E4-1183-4F74-99EC-EE975B372D7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7AAA2E4-1183-4F74-99EC-EE975B372D7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA3D558A-7ECC-4C34-9FC4-AD1038600E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA3D558A-7ECC-4C34-9FC4-AD1038600E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA3D558A-7ECC-4C34-9FC4-AD1038600E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA3D558A-7ECC-4C34-9FC4-AD1038600E46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

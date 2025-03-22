@@ -1,0 +1,44 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "0.tsx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "0.tmx": {
+            "scale": 3,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 384,
+                "y": 246.16666666666666
+            }
+        },
+        "0.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 5.5
+        }
+    },
+    "frame.defaultDuration": 1000,
+    "last.imagePath": "D:/Bordel sans nom/jeux/TPDP/Modding/Base/gn_dat5.arc/map/chip",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "openFiles": [
+        "0.tsx",
+        "0.tmx"
+    ],
+    "project": "CoH.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+        "0.tsx",
+        "0.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
