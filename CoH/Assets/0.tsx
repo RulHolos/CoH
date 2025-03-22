@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="0" tilewidth="16" tileheight="16" tilecount="256" columns="8">
- <image source="../../../../../../jeux/TPDP/Modding/Base/gn_dat5.arc/map/chip/001.png" width="128" height="512"/>
+ <image source="001.png" width="128" height="512"/>
  <tile id="12">
   <animation>
    <frame tileid="12" duration="1000"/>

@@ -90,7 +90,7 @@ internal static class MainWindow
 
     public static void Dispose()
     {
-
+        CurrentView?.Unload();
     }
 
     #region GameLoop

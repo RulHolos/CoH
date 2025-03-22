@@ -11,6 +11,9 @@
   <ItemGroup>
     <None Remove="Assets\0.tmx" />
     <None Remove="Assets\0.tsx" />
+    <None Remove="Assets\001.png" />
+    <None Remove="Assets\002.png" />
+    <None Remove="Assets\1.tsx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +21,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\0.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\1.tsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="border.jpg">
@@ -36,6 +42,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Programmation\Moteurs\Weave\rlImGui-cs\rlImGui\rlImGui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\001.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\002.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
