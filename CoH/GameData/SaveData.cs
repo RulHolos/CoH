@@ -15,6 +15,7 @@ public struct SaveData
     public bool Gender; // True = Female; False = Male
     public uint Money;
     public Vector2 PositionOnMap;
+    public int CurrentMap;
     public sbyte FacingDir; // 0 = Left, 1 = Right, 2 = Top, 3 = Bottom
     public Party PartyEchoes; // No more than 6.
 }

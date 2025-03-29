@@ -13,8 +13,11 @@ public abstract class View
 {
     public View? PreviousView { get; private set; }
     public View? NextView { get; private set; }
-    public ulong Timer { get; set; }
+    public int Timer { get; set; }
 
+    /// <summary>
+    /// Your DON'T WANT to call <see cref="Load"/> in this constructor.
+    /// </summary>
     public View()
     {
 

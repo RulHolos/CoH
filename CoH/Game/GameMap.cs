@@ -9,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using ImGuiNET;
 
 namespace CoH.Game;
 
@@ -20,26 +21,33 @@ public class GameMap : View
     public Player Player = new();
     public Camera2D WorldCamera = new() { Zoom = 1.0f };
     public Camera2D ScreenCamera = new() { Zoom = 1.0f };
-    public RenderTexture2D RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / 5), (int)(MainWindow.GameViewport.Y / 5));
+    public float ScaleFactor = 5f;
+    public RenderTexture2D RenderTarget;
+
+    private bool ShowGUI = false;
 
     public GameMap(int mapId)
         : base()
     {
         MapId = mapId;
-        Loader mapLoader = Loader.Default();
-        string filePath = Path.Combine(MainWindow.PathToResources, $"{mapId}.tmx");
-        if (File.Exists(filePath))
-            Map = mapLoader.LoadMap(filePath);
-        else
-            Log.Error($"MAP: [ID {MapId}] DIDN'T LOAD!!!");
     }
 
     public override void Load()
     {
+        Loader mapLoader = Loader.Default();
+        string filePath = Path.Combine(MainWindow.PathToResources, $"{MapId}.tmx");
+        if (File.Exists(filePath))
+            Map = mapLoader.LoadMap(filePath);
+        else
+            Log.Error($"MAP: [ID {MapId}] DIDN'T LOAD!!!");
+
         if (Map == null) return;
 
         Tilesets.AddRange(from Tileset tileset in Map.Tilesets
                           select Raylib.LoadTexture(Path.Combine(MainWindow.PathToResources, tileset.Image.Value.Source)));
+
+        RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / ScaleFactor), (int)(MainWindow.GameViewport.Y / ScaleFactor));
+        
         base.Load();
     }
 
@@ -47,6 +55,8 @@ public class GameMap : View
     {
         foreach (var texture in Tilesets)
             Raylib.UnloadTexture(texture);
+        Raylib.UnloadRenderTexture(RenderTarget);
+        
         base.Unload();
     }
 
@@ -55,6 +65,26 @@ public class GameMap : View
         if (Map == null) return;
 
         Player.Frame(deltaTime);
+
+#if DEBUG
+        float tempFactor = ScaleFactor;
+
+        if (Raylib.IsKeyPressed(KeyboardKey.F3))
+            ShowGUI = !ShowGUI;
+
+        if (Raylib.IsKeyPressed(KeyboardKey.Q))
+            tempFactor += 0.5f;
+        else if (Raylib.IsKeyPressed(KeyboardKey.E))
+            tempFactor -= 0.5f;
+
+        if (tempFactor != ScaleFactor)
+        {
+            Raylib.UnloadRenderTexture(RenderTarget);
+            RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / tempFactor), (int)(MainWindow.GameViewport.Y / tempFactor));
+        }  
+
+        ScaleFactor = tempFactor;
+#endif
     }
 
     public override void Render(float deltaTime)
@@ -63,7 +93,7 @@ public class GameMap : View
         // If there is no data, should the game go back to the previous valid view or just doesn't do anything?
         // That shouldn't happen in a normal game, but still, it's something to think about.
 
-        float virtualRatio = MainWindow.GameViewport.X / MainWindow.GameViewport.X / 5;
+        float virtualRatio = MainWindow.GameViewport.X / MainWindow.GameViewport.X / ScaleFactor;
         float tileSize = Map.TileWidth; // Assuming square tiles
         Vector2 playerTilePos = new(Player.Position.X * tileSize, Player.Position.Y * tileSize);
 
@@ -79,7 +109,7 @@ public class GameMap : View
         ScreenCamera.Target.Y *= virtualRatio;
 
         Rectangle sourceRec = new(0.0f, 0.0f, RenderTarget.Texture.Width, -(float)RenderTarget.Texture.Height);
-        Rectangle destRec = new(-virtualRatio + 50, -virtualRatio, MainWindow.GameViewport.X + (virtualRatio * 2), MainWindow.GameViewport.Y + (virtualRatio * 2));
+        Rectangle destRec = new(-virtualRatio, -virtualRatio, MainWindow.GameViewport.X + (virtualRatio * 2), MainWindow.GameViewport.Y + (virtualRatio * 2));
 
         Raylib.BeginTextureMode(RenderTarget);
 
@@ -113,7 +143,7 @@ public class GameMap : View
                     uint x = index % width;
                     uint y = index / width;
 
-                    RenderTile(tileLayer, x, y, tileId);
+                    RenderTile(tileLayer, x, y, tileId, deltaTime);
                 }
             }
         }
@@ -125,16 +155,35 @@ public class GameMap : View
         Raylib.BeginMode2D(ScreenCamera);
         Raylib.DrawTexturePro(RenderTarget.Texture, sourceRec, destRec, Vector2.Zero, 0.0f, Raylib_cs.Color.White);
         Raylib.EndMode2D();
-
-        Raylib.DrawFPS(Raylib.GetScreenWidth() - 95, 10);
     }
 
-    // TODO: Animations
-    private void RenderTile(TileLayer layer, uint x, uint y, uint tileId)
+    private void RenderTile(TileLayer layer, uint x, uint y, uint tileId, float deltaTime)
     {
         Tileset? tileset = GetTilesetForTile(tileId, out uint trueTileId, out int tilesetIndex);
         if (tileset == null) return;
-        //Tile tile = tileset.Tiles[(int)trueTileId];
+
+        Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == (int)trueTileId);
+
+        if (tile != null && tile.Animation.Count > 0)
+        {
+            int animationTime = 0;
+
+            foreach (var frame in tile.Animation)
+                animationTime += (int)(frame.Duration * 60 / 1000);
+
+            int currentTime = Timer % animationTime;
+
+            int elapsedTime = 0;
+            foreach (var frame in tile.Animation)
+            {
+                elapsedTime += (int)(frame.Duration * 60 / 1000);
+                if (currentTime < elapsedTime)
+                {
+                    trueTileId = frame.TileID;
+                    break;
+                }
+            }
+        }
 
         var tint = Raylib_cs.Color.White;
         if (layer.TintColor.HasValue)
@@ -148,9 +197,6 @@ public class GameMap : View
         uint srcY = (trueTileId / tilesPerRow) * tileset.TileHeight;
         Rectangle sourceRect = new(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
 
-        /*float posX = x * tileset.TileWidth * Scale;
-        float posY = y * tileset.TileHeight * Scale;
-        Rectangle drawPosition = new(posX, posY, tileset.TileWidth * Scale, tileset.TileHeight * Scale);*/
         float posX = x * tileset.TileWidth;
         float posY = y * tileset.TileHeight;
         Rectangle drawPosition = new(posX, posY, tileset.TileWidth, tileset.TileHeight);
@@ -184,6 +230,20 @@ public class GameMap : View
 
     public override void RenderGUI(float deltaTime)
     {
-        
+        if (!ShowGUI)
+            return;
+
+        if (ImGui.BeginMainMenuBar())
+        {
+            ImGui.BeginMenu($"{Raylib.GetFPS()}FPS", false);
+            if (ImGui.BeginMenu("View"))
+            {
+                ImGui.MenuItem("Test");
+
+                ImGui.EndMenu();
+            }
+
+            ImGui.EndMainMenuBar();
+        }
     }
 }
