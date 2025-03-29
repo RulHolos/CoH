@@ -16,8 +16,11 @@ public class GameMap : View
 {
     public int MapId { get; private set; }
     public Map? Map { get; private set; } = null;
-    public List<Texture2D> Tilesets { get; private set; } = []; // (Texture2D, FirstGID)
-    private Vector2 RenderCursor = Vector2.Zero;
+    public List<Texture2D> Tilesets { get; private set; } = [];
+    public Player Player = new();
+    public Camera2D WorldCamera = new() { Zoom = 1.0f };
+    public Camera2D ScreenCamera = new() { Zoom = 1.0f };
+    public RenderTexture2D RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / 5), (int)(MainWindow.GameViewport.Y / 5));
 
     public GameMap(int mapId)
         : base()
@@ -33,10 +36,10 @@ public class GameMap : View
 
     public override void Load()
     {
-        foreach (Tileset tileset in Map?.Tilesets)
-        {
-            Tilesets.Add(Raylib.LoadTexture(Path.Combine(MainWindow.PathToResources, tileset.Image.Value.Source)));
-        }
+        if (Map == null) return;
+
+        Tilesets.AddRange(from Tileset tileset in Map.Tilesets
+                          select Raylib.LoadTexture(Path.Combine(MainWindow.PathToResources, tileset.Image.Value.Source)));
         base.Load();
     }
 
@@ -49,27 +52,56 @@ public class GameMap : View
 
     public override void Frame(float deltaTime)
     {
-        
+        if (Map == null) return;
+
+        Player.Frame(deltaTime);
     }
 
     public override void Render(float deltaTime)
     {
-        if (Map == null)
-            return; // If no map is loaded, then this doesn't do anything, since it...Doesn't have any data.
+        if (Map == null) return; // If no map is loaded, then this doesn't do anything, since it...Doesn't have any data.
         // If there is no data, should the game go back to the previous valid view or just doesn't do anything?
         // That shouldn't happen in a normal game, but still, it's something to think about.
 
+        float virtualRatio = MainWindow.GameViewport.X / MainWindow.GameViewport.X / 5;
+        float tileSize = Map.TileWidth; // Assuming square tiles
+        Vector2 playerTilePos = new(Player.Position.X * tileSize, Player.Position.Y * tileSize);
+
+        ScreenCamera.Target = playerTilePos + new Vector2(tileSize / 2, tileSize / 2);
+
+        // Round worldSpace coordinates, keep decimals into screenSpace coordinates
+        WorldCamera.Target.X = MathF.Round(ScreenCamera.Target.X);
+        ScreenCamera.Target.X -= WorldCamera.Target.X;
+        ScreenCamera.Target.X *= virtualRatio;
+
+        WorldCamera.Target.Y = MathF.Round(ScreenCamera.Target.Y);
+        ScreenCamera.Target.Y -= WorldCamera.Target.Y;
+        ScreenCamera.Target.Y *= virtualRatio;
+
+        Rectangle sourceRec = new(0.0f, 0.0f, RenderTarget.Texture.Width, -(float)RenderTarget.Texture.Height);
+        Rectangle destRec = new(-virtualRatio + 50, -virtualRatio, MainWindow.GameViewport.X + (virtualRatio * 2), MainWindow.GameViewport.Y + (virtualRatio * 2));
+
+        Raylib.BeginTextureMode(RenderTarget);
+
         // Renders the background color.
-        Raylib.ClearBackground(new Raylib_cs.Color(Map.BackgroundColor.R, Map.BackgroundColor.G, Map.BackgroundColor.B, (byte)255));
+        Raylib.ClearBackground(new(Map.BackgroundColor.R, Map.BackgroundColor.G, Map.BackgroundColor.B, (byte)255));
+
+        Raylib.BeginMode2D(WorldCamera);
 
         foreach (BaseLayer layer in Map.Layers)
         {
             if (!layer.Visible)
                 continue;
+            if (layer is ObjectLayer objectLayer)
+            {
+                if (objectLayer.Name.Equals("player", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    Player.Render(deltaTime);
+                }
+            }
             if (layer is TileLayer tileLayer)
             {
                 uint width = tileLayer.Width;
-                uint height = tileLayer.Height;
                 uint[] tileData = tileLayer.Data.Value.GlobalTileIDs.Value;
 
                 for (uint index = 0; index < tileData.Length; index++)
@@ -85,15 +117,29 @@ public class GameMap : View
                 }
             }
         }
+
+        Raylib.EndMode2D();
+
+        Raylib.EndTextureMode();
+
+        Raylib.BeginMode2D(ScreenCamera);
+        Raylib.DrawTexturePro(RenderTarget.Texture, sourceRec, destRec, Vector2.Zero, 0.0f, Raylib_cs.Color.White);
+        Raylib.EndMode2D();
+
+        Raylib.DrawFPS(Raylib.GetScreenWidth() - 95, 10);
     }
 
+    // TODO: Animations
     private void RenderTile(TileLayer layer, uint x, uint y, uint tileId)
     {
-        Tileset tileset = GetTilesetForTile(tileId, out uint trueTileId, out int tilesetIndex);
-        Raylib_cs.Color tint = new Raylib_cs.Color(255, 255, 255, 255);
+        Tileset? tileset = GetTilesetForTile(tileId, out uint trueTileId, out int tilesetIndex);
+        if (tileset == null) return;
+        //Tile tile = tileset.Tiles[(int)trueTileId];
+
+        var tint = Raylib_cs.Color.White;
         if (layer.TintColor.HasValue)
         {
-            DotTiled.Color tintColor = layer.TintColor.Value;
+            var tintColor = layer.TintColor.Value;
             tint = new(tintColor.R, tintColor.G, tintColor.B, tintColor.A);
         }
 
@@ -102,21 +148,23 @@ public class GameMap : View
         uint srcY = (trueTileId / tilesPerRow) * tileset.TileHeight;
         Rectangle sourceRect = new(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
 
+        /*float posX = x * tileset.TileWidth * Scale;
+        float posY = y * tileset.TileHeight * Scale;
+        Rectangle drawPosition = new(posX, posY, tileset.TileWidth * Scale, tileset.TileHeight * Scale);*/
         float posX = x * tileset.TileWidth;
         float posY = y * tileset.TileHeight;
-        Vector2 drawPosition = new(posX, posY);
+        Rectangle drawPosition = new(posX, posY, tileset.TileWidth, tileset.TileHeight);
 
-        Raylib.DrawTextureRec(Tilesets[tilesetIndex], sourceRect, drawPosition, tint);
+        Raylib.DrawTexturePro(Tilesets[tilesetIndex], sourceRect, drawPosition, Vector2.Zero, 0, tint);
     }
 
-    private Tileset GetTilesetForTile(uint tileGid, out uint localTileId, out int tilesetIndex)
+    private Tileset? GetTilesetForTile(uint tileGid, out uint localTileId, out int tilesetIndex)
     {
-        localTileId = 0;
-        tilesetIndex = 0;
+        localTileId = 0; tilesetIndex = 0;
 
-        Tileset foundTileset = null;
+        Tileset? foundTileset = null;
         int i = 0;
-        foreach (var tileset in Map.Tilesets)
+        foreach (var tileset in Map!.Tilesets)
         {
             if (tileGid >= tileset.FirstGID)
             {
@@ -124,19 +172,14 @@ public class GameMap : View
                 tilesetIndex = i;
             }
             else
-            {
                 break;
-            }
             i++;
         }
 
         if (foundTileset != null)
-        {
             localTileId = tileGid - foundTileset.FirstGID;
-            return foundTileset;
-        }
-        
-        return null; // Should not happen unless there's an error in the map
+
+        return foundTileset;
     }
 
     public override void RenderGUI(float deltaTime)

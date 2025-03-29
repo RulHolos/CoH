@@ -38,7 +38,12 @@ public abstract class View
 
     public abstract void Frame(float deltaTime);
     public abstract void Render(float deltaTime);
-    public abstract void RenderGUI(float deltaTime);
+    public virtual void RenderGUI(float deltaTime) { }
+
+    public virtual void BeforeFrame(float deltaTime)
+    {
+        
+    }
 
     public virtual void AfterFrame(float deltaTime)
     {

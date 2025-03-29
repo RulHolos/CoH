@@ -21,9 +21,6 @@ public unsafe struct BaseEcho
     public fixed ushort ItemDropTable[4];
     public ushort EchoDexIndex;
     public EchoStyleArray Styles;
-
-    public static bool operator ==(BaseEcho a, BaseEcho b) => a.Name == b.Name;
-    public static bool operator !=(BaseEcho a, BaseEcho b) => a.Name != b.Name;
 }
 
 [InlineArray(4)]
