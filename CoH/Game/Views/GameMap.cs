@@ -11,9 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ImGuiNET;
 
-namespace CoH.Game;
+namespace CoH.Game.Views;
 
-public class GameMap : View
+public partial class GameMap : View
 {
     public int MapId { get; private set; }
     public Map? Map { get; private set; } = null;
@@ -21,10 +21,14 @@ public class GameMap : View
     public Player Player = new();
     public Camera2D WorldCamera = new() { Zoom = 1.0f };
     public Camera2D ScreenCamera = new() { Zoom = 1.0f };
-    public float ScaleFactor = 5f;
+    public float ScaleFactor = 4f;
     public RenderTexture2D RenderTarget;
 
+#if DEBUG
+    private bool ShowGUI = true;
+#else
     private bool ShowGUI = false;
+#endif
 
     public GameMap(int mapId)
         : base()
@@ -73,9 +77,9 @@ public class GameMap : View
             ShowGUI = !ShowGUI;
 
         if (Raylib.IsKeyPressed(KeyboardKey.Q))
-            tempFactor += 0.5f;
+            tempFactor += 0.1f;
         else if (Raylib.IsKeyPressed(KeyboardKey.E))
-            tempFactor -= 0.5f;
+            tempFactor -= 0.1f;
 
         if (tempFactor != ScaleFactor)
         {
@@ -87,6 +91,10 @@ public class GameMap : View
 #endif
     }
 
+    /// <summary>
+    /// Two camera setups to allow for pixel-perfect rendering.
+    /// </summary>
+    /// <param name="deltaTime">DeltaTime (in seconds).</param>
     public override void Render(float deltaTime)
     {
         if (Map == null) return; // If no map is loaded, then this doesn't do anything, since it...Doesn't have any data.
@@ -94,12 +102,14 @@ public class GameMap : View
         // That shouldn't happen in a normal game, but still, it's something to think about.
 
         float virtualRatio = MainWindow.GameViewport.X / MainWindow.GameViewport.X / ScaleFactor;
-        float tileSize = Map.TileWidth; // Assuming square tiles
+        float tileSize = Map.TileWidth;
         Vector2 playerTilePos = new(Player.Position.X * tileSize, Player.Position.Y * tileSize);
 
-        ScreenCamera.Target = playerTilePos + new Vector2(tileSize / 2, tileSize / 2);
+        // Offsets the camera to the player position (top-left + half-rendertarget offset)
+        Vector2 cameraOffset = new(RenderTarget.Texture.Width / 2, RenderTarget.Texture.Height / 2);
+        ScreenCamera.Target = playerTilePos - (cameraOffset - new Vector2(tileSize / 2));
 
-        // Round worldSpace coordinates, keep decimals into screenSpace coordinates
+        // Transforms the world camera (pixel) to the upscaled screen camera.
         WorldCamera.Target.X = MathF.Round(ScreenCamera.Target.X);
         ScreenCamera.Target.X -= WorldCamera.Target.X;
         ScreenCamera.Target.X *= virtualRatio;
@@ -108,16 +118,17 @@ public class GameMap : View
         ScreenCamera.Target.Y -= WorldCamera.Target.Y;
         ScreenCamera.Target.Y *= virtualRatio;
 
+        // Camera and render target things
         Rectangle sourceRec = new(0.0f, 0.0f, RenderTarget.Texture.Width, -(float)RenderTarget.Texture.Height);
-        Rectangle destRec = new(-virtualRatio, -virtualRatio, MainWindow.GameViewport.X + (virtualRatio * 2), MainWindow.GameViewport.Y + (virtualRatio * 2));
+        Rectangle destRec = new(-virtualRatio, -virtualRatio, MainWindow.GameViewport.X + virtualRatio * 2, MainWindow.GameViewport.Y + virtualRatio * 2);
 
         Raylib.BeginTextureMode(RenderTarget);
 
-        // Renders the background color.
         Raylib.ClearBackground(new(Map.BackgroundColor.R, Map.BackgroundColor.G, Map.BackgroundColor.B, (byte)255));
 
         Raylib.BeginMode2D(WorldCamera);
 
+        // ### ACTUAL RENDERING ### //
         foreach (BaseLayer layer in Map.Layers)
         {
             if (!layer.Visible)
@@ -164,6 +175,7 @@ public class GameMap : View
 
         Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == (int)trueTileId);
 
+        // ### FRAME ANIMATION ### //
         if (tile != null && tile.Animation.Count > 0)
         {
             int animationTime = 0;
@@ -193,8 +205,8 @@ public class GameMap : View
         }
 
         uint tilesPerRow = tileset.Image.Value.Width / tileset.TileWidth;
-        uint srcX = (trueTileId % tilesPerRow) * tileset.TileWidth;
-        uint srcY = (trueTileId / tilesPerRow) * tileset.TileHeight;
+        uint srcX = trueTileId % tilesPerRow * tileset.TileWidth;
+        uint srcY = trueTileId / tilesPerRow * tileset.TileHeight;
         Rectangle sourceRect = new(srcX, srcY, tileset.TileWidth, tileset.TileHeight);
 
         float posX = x * tileset.TileWidth;
@@ -206,7 +218,8 @@ public class GameMap : View
 
     private Tileset? GetTilesetForTile(uint tileGid, out uint localTileId, out int tilesetIndex)
     {
-        localTileId = 0; tilesetIndex = 0;
+        localTileId = 0;
+        tilesetIndex = 0;
 
         Tileset? foundTileset = null;
         int i = 0;
@@ -226,24 +239,5 @@ public class GameMap : View
             localTileId = tileGid - foundTileset.FirstGID;
 
         return foundTileset;
-    }
-
-    public override void RenderGUI(float deltaTime)
-    {
-        if (!ShowGUI)
-            return;
-
-        if (ImGui.BeginMainMenuBar())
-        {
-            ImGui.BeginMenu($"{Raylib.GetFPS()}FPS", false);
-            if (ImGui.BeginMenu("View"))
-            {
-                ImGui.MenuItem("Test");
-
-                ImGui.EndMenu();
-            }
-
-            ImGui.EndMainMenuBar();
-        }
     }
 }

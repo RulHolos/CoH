@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CoH.Game;
+namespace CoH.Game.Views;
 
 /// <summary>
 /// Base class for views. (Main Menu, map, battle, ...)
@@ -67,7 +67,7 @@ public abstract class View
         }
         try
         {
-            this.Unload();
+            Unload();
             if (view != null)
                 view.Load();
             else

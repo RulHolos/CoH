@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Raylib_cs;
 using Serilog;
 
-namespace CoH.Game;
+namespace CoH.Game.Views;
 
 public class MainMenu : View
 {

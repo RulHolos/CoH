@@ -11,6 +11,8 @@ using rlImGui_cs;
 using ImGuiNET;
 using CoH.Game;
 using Serilog;
+using CoH.Game.Views;
+using CoH.GameData;
 
 namespace CoH;
 
@@ -26,13 +28,10 @@ public static class MainWindow
 {
     public static Version? VersionNumber = Assembly.GetEntryAssembly()?.GetName().Version;
     public static string PathToResources = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
-    public static Vector2 GameViewport = new(960, 720);
-
-    private static RenderTexture2D _renderTarget;
-    private static Texture2D borderTexture;
+    public static string PathToSave = Path.Combine(Directory.GetCurrentDirectory(), "Save");
+    public static Vector2 GameViewport;
 
     public static View FirstView { get; private set; } = new MainMenu();
-
     public static View? CurrentView { get; set; }
 
     /// <summary>
@@ -41,25 +40,20 @@ public static class MainWindow
     /// </summary>
     public static void Initialize()
     {
+        Config conf = Configuration.Load();
+        GameViewport = new(conf.WindowSizeX, conf.WindowSizeY);
+
+        CreateLogger();
+
         Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.HighDpiWindow | ConfigFlags.VSyncHint);
-        Raylib.InitWindow(960, 720, $"Myara 2 ~ Cycle of Hakurama | v{VersionNumber}");
+        Raylib.InitWindow(conf.WindowSizeX, conf.WindowSizeY, $"Myara 2 ~ Cycle of Hakurama | v{VersionNumber}");
         Raylib.SetExitKey(KeyboardKey.Null);
         Raylib.SetTargetFPS(60);
 
         Raylib.InitAudioDevice();
 
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File("Engine.log",
-                rollingInterval: RollingInterval.Infinite,
-                rollOnFileSizeLimit: true)
-            .CreateLogger();
-
         rlImGui.Setup(true, true);
         ImGui.GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
-
-        borderTexture = Raylib.LoadTexture(Path.Combine(Directory.GetCurrentDirectory(), "border.jpg"));
-        _renderTarget = Raylib.LoadRenderTexture(960, 720);
 
         while (!Raylib.IsWindowReady())
             continue;
@@ -87,6 +81,20 @@ public static class MainWindow
         rlImGui.Shutdown();
         Raylib.CloseAudioDevice();
         Raylib.CloseWindow();
+    }
+
+    private static void CreateLogger()
+    {
+        /*string pathToLog = Path.Combine(Directory.GetCurrentDirectory(), "Engine.log");
+        if (File.Exists(pathToLog))
+            File.Delete(pathToLog);*/
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("Engine.log",
+                rollingInterval: RollingInterval.Infinite,
+                rollOnFileSizeLimit: true)
+            .CreateLogger();
     }
 
     public static void Dispose()
@@ -127,13 +135,6 @@ public static class MainWindow
 
     #region Rendering
 
-    private struct ViewportInfo
-    {
-        public Vector2 size;
-        public Vector2 pos;
-        public Vector2 scaleSize;
-    }
-
     /// <summary>
     /// Prepares the viewport.
     /// </summary>
@@ -141,53 +142,6 @@ public static class MainWindow
     /// <param name="deltaTime">DeltaTime IN SECONDS</param>
     private static void BeforeRender(float deltaTime)
     {
-        /*int windowWidth = Raylib.GetScreenWidth();
-        int windowHeight = Raylib.GetScreenHeight();
-
-        int viewportWidth = (int)GameViewport.X;
-        int viewportHeight = (int)GameViewport.Y;
-
-        // Initial scale based on height
-        float scale = (float)windowHeight / viewportHeight;
-
-        // Ensure the scaled width does not exceed the window width
-        if (viewportWidth * scale > windowWidth)
-        {
-            scale = (float)windowWidth / viewportWidth;
-        }
-
-        // Compute final scaled viewport size
-        int scaledViewportWidth = (int)(viewportWidth * scale);
-        int scaledViewportHeight = (int)(viewportHeight * scale);
-
-        // Center the viewport inside the window
-        int viewportX = (windowWidth - scaledViewportWidth) / 2;
-        int viewportY = (windowHeight - scaledViewportHeight) / 2;
-
-        vinf = new ViewportInfo()
-        {
-            size = new Vector2(windowWidth, windowHeight),
-            pos = new Vector2(viewportX, viewportY),
-            scaleSize = new Vector2(scaledViewportWidth, scaledViewportHeight)
-        };
-
-        Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.Black);
-
-        // Draw borders
-        Raylib.DrawTexturePro(
-            borderTexture,
-            new Rectangle(0, 0, borderTexture.Width, borderTexture.Height),
-            new Rectangle(0, 0, windowWidth, windowHeight),
-            new Vector2(0, 0), 0f,
-            Color.White
-        );
-
-        // Renders the viewport
-        Raylib.BeginTextureMode(_renderTarget);
-        Raylib.ClearBackground(Color.DarkGray);
-        */
-
         Raylib.BeginDrawing();
         Raylib.ClearBackground(Color.Black);
     }
@@ -207,18 +161,6 @@ public static class MainWindow
     /// <param name="deltaTime">DeltaTime IN SECONDS</param>
     private static void AfterRender(float deltaTime)
     {
-        /*Raylib.EndTextureMode();
-
-        // Draw the viewport texture scaled inside the window
-        Raylib.DrawTexturePro(
-            _renderTarget.Texture,
-            new Rectangle(0, 0, vinf.size.X, -vinf.size.Y), // Flip Y-axis
-            new Rectangle(vinf.pos.X, vinf.pos.Y, vinf.scaleSize.X, vinf.scaleSize.Y),
-            new Vector2(0, 0),
-            0f,
-            Color.White
-        );*/
-
         Raylib.EndDrawing();
     }
 

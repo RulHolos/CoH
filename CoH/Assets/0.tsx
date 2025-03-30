@@ -263,4 +263,116 @@
    <frame tileid="205" duration="1000"/>
   </animation>
  </tile>
+ <tile id="206">
+  <animation>
+   <frame tileid="206" duration="1000"/>
+   <frame tileid="207" duration="1000"/>
+   <frame tileid="208" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="209">
+  <animation>
+   <frame tileid="209" duration="1000"/>
+   <frame tileid="210" duration="1000"/>
+   <frame tileid="211" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="212">
+  <animation>
+   <frame tileid="212" duration="1000"/>
+   <frame tileid="213" duration="1000"/>
+   <frame tileid="214" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="215">
+  <animation>
+   <frame tileid="215" duration="1000"/>
+   <frame tileid="216" duration="1000"/>
+   <frame tileid="217" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="219">
+  <animation>
+   <frame tileid="219" duration="1000"/>
+   <frame tileid="220" duration="1000"/>
+   <frame tileid="221" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="222">
+  <animation>
+   <frame tileid="222" duration="1000"/>
+   <frame tileid="223" duration="1000"/>
+   <frame tileid="224" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="225">
+  <animation>
+   <frame tileid="225" duration="1000"/>
+   <frame tileid="226" duration="1000"/>
+   <frame tileid="227" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="228">
+  <animation>
+   <frame tileid="228" duration="1000"/>
+   <frame tileid="229" duration="1000"/>
+   <frame tileid="230" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="231">
+  <animation>
+   <frame tileid="231" duration="1000"/>
+   <frame tileid="232" duration="1000"/>
+   <frame tileid="233" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="234">
+  <animation>
+   <frame tileid="234" duration="1000"/>
+   <frame tileid="235" duration="1000"/>
+   <frame tileid="236" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="237">
+  <animation>
+   <frame tileid="237" duration="1000"/>
+   <frame tileid="238" duration="1000"/>
+   <frame tileid="239" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="240">
+  <animation>
+   <frame tileid="240" duration="1000"/>
+   <frame tileid="241" duration="1000"/>
+   <frame tileid="242" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="243">
+  <animation>
+   <frame tileid="243" duration="1000"/>
+   <frame tileid="244" duration="1000"/>
+   <frame tileid="245" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="246">
+  <animation>
+   <frame tileid="246" duration="1000"/>
+   <frame tileid="247" duration="1000"/>
+   <frame tileid="248" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="249">
+  <animation>
+   <frame tileid="249" duration="1000"/>
+   <frame tileid="250" duration="1000"/>
+   <frame tileid="251" duration="1000"/>
+  </animation>
+ </tile>
+ <tile id="252">
+  <animation>
+   <frame tileid="252" duration="1000"/>
+   <frame tileid="253" duration="1000"/>
+   <frame tileid="254" duration="1000"/>
+  </animation>
+ </tile>
 </tileset>
