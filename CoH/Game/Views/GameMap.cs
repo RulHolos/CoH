@@ -13,27 +13,55 @@ using ImGuiNET;
 
 namespace CoH.Game.Views;
 
+public class MapException : Exception
+{
+    public MapException() { }
+
+    public MapException(string message)
+        : base(message) { }
+
+    public MapException(string message, Exception inner)
+        : base(message, inner) { }
+}
+
+/// <summary>
+/// Associated with a Tile, this dictates how the player should behave when colliding with this tile.
+/// </summary>
+public enum TileType
+{
+    None,
+    Collide,
+    Water,
+    Waterfall,
+    RampLeft,
+    RampRight,
+    RampDown,
+    RampUp,
+}
+
 public partial class GameMap : View
 {
     public int MapId { get; private set; }
     public Map? Map { get; private set; } = null;
     public List<Texture2D> Tilesets { get; private set; } = [];
-    public Player Player = new();
+    public Player Player { get; private set; }
     public Camera2D WorldCamera = new() { Zoom = 1.0f };
     public Camera2D ScreenCamera = new() { Zoom = 1.0f };
     public float ScaleFactor = 4f;
     public RenderTexture2D RenderTarget;
 
-#if DEBUG
-    private bool ShowGUI = true;
-#else
-    private bool ShowGUI = false;
-#endif
+    public ILogger MapLogger;
 
-    public GameMap(int mapId)
+    public GameMap(int mapId, bool fromSave = false)
         : base()
     {
         MapId = mapId;
+        Player = new(this);
+
+        if (fromSave)
+            Player.Position = SaveFile.SaveData.PositionOnMap;
+
+        MapLogger = Log.ForContext("Tag", $"MAP {MapId}");
     }
 
     public override void Load()
@@ -43,15 +71,25 @@ public partial class GameMap : View
         if (File.Exists(filePath))
             Map = mapLoader.LoadMap(filePath);
         else
-            Log.Error($"MAP: [ID {MapId}] DIDN'T LOAD!!!");
+            MapLogger.Error($"MAP: [ID {MapId}] DOESN'T EXIST!!!");
 
-        if (Map == null) return;
+        // Map didn't load, abort loading everything.
+        // Should the map not loading crash the game or do something else?
+        // For now, it throws an exception, because there is no obvious expected behaviour in this stage of development.
+        if (Map == null)
+            throw new MapException($"MAP [ID {MapId}] Didn't load");
 
         Tilesets.AddRange(from Tileset tileset in Map.Tilesets
                           select Raylib.LoadTexture(Path.Combine(MainWindow.PathToResources, tileset.Image.Value.Source)));
 
         RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / ScaleFactor), (int)(MainWindow.GameViewport.Y / ScaleFactor));
-        
+
+        MapLogger.Debug($"Map Loaded successfully");
+        MapLogger.Debug($"Contains {Tilesets.Count} tileset(s)");
+        MapLogger.Debug($"Map size is {Map.Width}x{Map.Height} tiles");
+
+        Player.Load();
+
         base.Load();
     }
 
@@ -60,6 +98,8 @@ public partial class GameMap : View
         foreach (var texture in Tilesets)
             Raylib.UnloadTexture(texture);
         Raylib.UnloadRenderTexture(RenderTarget);
+
+        Player.Unload();
         
         base.Unload();
     }
@@ -88,6 +128,9 @@ public partial class GameMap : View
         }  
 
         ScaleFactor = tempFactor;
+
+        if (Raylib.IsKeyPressed(KeyboardKey.S))
+            SaveFile.Save();
 #endif
     }
 
@@ -97,9 +140,8 @@ public partial class GameMap : View
     /// <param name="deltaTime">DeltaTime (in seconds).</param>
     public override void Render(float deltaTime)
     {
-        if (Map == null) return; // If no map is loaded, then this doesn't do anything, since it...Doesn't have any data.
-        // If there is no data, should the game go back to the previous valid view or just doesn't do anything?
-        // That shouldn't happen in a normal game, but still, it's something to think about.
+        if (Map == null)
+            return;
 
         float virtualRatio = MainWindow.GameViewport.X / MainWindow.GameViewport.X / ScaleFactor;
         float tileSize = Map.TileWidth;
@@ -171,7 +213,8 @@ public partial class GameMap : View
     private void RenderTile(TileLayer layer, uint x, uint y, uint tileId, float deltaTime)
     {
         Tileset? tileset = GetTilesetForTile(tileId, out uint trueTileId, out int tilesetIndex);
-        if (tileset == null) return;
+        if (tileset == null)
+            return;
 
         Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == (int)trueTileId);
 
@@ -216,7 +259,7 @@ public partial class GameMap : View
         Raylib.DrawTexturePro(Tilesets[tilesetIndex], sourceRect, drawPosition, Vector2.Zero, 0, tint);
     }
 
-    private Tileset? GetTilesetForTile(uint tileGid, out uint localTileId, out int tilesetIndex)
+    public Tileset? GetTilesetForTile(uint tileGid, out uint localTileId, out int tilesetIndex)
     {
         localTileId = 0;
         tilesetIndex = 0;
@@ -239,5 +282,27 @@ public partial class GameMap : View
             localTileId = tileGid - foundTileset.FirstGID;
 
         return foundTileset;
+    }
+
+    public (Tile?, TileType) GetTileAtPosition(Vector2 tilePos, int layerIndex, uint tileId)
+    {
+        Tileset? tileset = GetTilesetForTile(tileId, out uint trueTileId, out _);
+        if (tileset != null)
+        {
+            Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == trueTileId);
+            if (tile != null && tile.Properties != null)
+            {
+                MapLogger.Debug($"Checking tile {tile.ID}.");
+                foreach (var p in tile.Properties)
+                    MapLogger.Debug(p.Name);
+
+                // TODO: Check for other tile properties.
+                if (tile.Properties.Any(p => p.Name == "Collision"))
+                {
+                    return (tile, TileType.Collide); // Tile has "Collide" property, can't walk on it
+                }
+            }
+        }
+        return (null, TileType.None);
     }
 }

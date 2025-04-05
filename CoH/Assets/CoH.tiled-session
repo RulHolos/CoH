@@ -9,11 +9,11 @@
     ],
     "fileStates": {
         "0.tmx": {
-            "scale": 2,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 256.5,
-                "y": 156.25
+                "x": 411.33333333333326,
+                "y": 202.83333333333331
             }
         },
         "0.tsx": {

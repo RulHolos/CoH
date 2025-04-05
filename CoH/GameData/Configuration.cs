@@ -15,6 +15,7 @@ public struct Config()
 {
     [DefaultValue(960)] public int WindowSizeX { get; set; } = 960;
     [DefaultValue(720)] public int WindowSizeY { get; set; } = 720;
+    [DefaultValue(false)] public bool VSync { get; set; } = false;
 }
 
 public static class Configuration

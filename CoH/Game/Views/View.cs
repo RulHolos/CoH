@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,14 @@ public abstract class View
     public View? PreviousView { get; private set; }
     public View? NextView { get; private set; }
     public int Timer { get; set; }
+
+    public bool Lock { get; set; } = false;
+
+#if DEBUG
+    public bool ShowGUI = true;
+#else
+    public bool ShowGUI = false;
+#endif
 
     /// <summary>
     /// Your DON'T WANT to call <see cref="Load"/> in this constructor.
@@ -76,6 +85,10 @@ public abstract class View
         catch (Exception e)
         {
             Console.Error.WriteLine($"Unable to switch views because of the following reason:\n{e}");
+        }
+        finally
+        {
+            NextView?.Unload();
         }
     }
 }

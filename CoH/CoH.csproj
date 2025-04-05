@@ -14,6 +14,7 @@
     <None Remove="Assets\001.png" />
     <None Remove="Assets\002.png" />
     <None Remove="Assets\1.tsx" />
+    <None Remove="Assets\Player\GirlChip.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\1.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Player\GirlChip.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="border.jpg">

@@ -13,6 +13,8 @@ using CoH.Game;
 using Serilog;
 using CoH.Game.Views;
 using CoH.GameData;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace CoH;
 
@@ -34,21 +36,24 @@ public static class MainWindow
     public static View FirstView { get; private set; } = new MainMenu();
     public static View? CurrentView { get; set; }
 
+    public static ILogger CoreLogger = Log.ForContext("Tag", "Core");
+
     /// <summary>
     /// Initializes the game window and starts the game loop.<br/>
     /// This is a blocking method.
     /// </summary>
     public static void Initialize()
     {
+        CreateLogger();
+
         Config conf = Configuration.Load();
         GameViewport = new(conf.WindowSizeX, conf.WindowSizeY);
-
-        CreateLogger();
+        SaveFile.Load();
 
         Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.HighDpiWindow | ConfigFlags.VSyncHint);
         Raylib.InitWindow(conf.WindowSizeX, conf.WindowSizeY, $"Myara 2 ~ Cycle of Hakurama | v{VersionNumber}");
         Raylib.SetExitKey(KeyboardKey.Null);
-        Raylib.SetTargetFPS(60);
+        Raylib.SetTargetFPS(120);
 
         Raylib.InitAudioDevice();
 
@@ -83,18 +88,29 @@ public static class MainWindow
         Raylib.CloseWindow();
     }
 
-    private static void CreateLogger()
+    private static unsafe void CreateLogger()
     {
-        /*string pathToLog = Path.Combine(Directory.GetCurrentDirectory(), "Engine.log");
+        // Delete the log everytime it launches the game again?
+        string pathToLog = Path.Combine(Directory.GetCurrentDirectory(), "Engine.log");
         if (File.Exists(pathToLog))
-            File.Delete(pathToLog);*/
+            File.Delete(pathToLog);
+
+        const string template = "{Timestamp:dd-MM-yyyy HH:mm:ss} [{Level:u3}] [{Tag}] {Message:lj}{NewLine}{Exception}";
 
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
+#if DEBUG
+            .MinimumLevel.Debug()
+#endif
+            .WriteTo.Console(outputTemplate: template)
             .WriteTo.File("Engine.log",
                 rollingInterval: RollingInterval.Infinite,
+                outputTemplate: template,
                 rollOnFileSizeLimit: true)
             .CreateLogger();
+
+        Raylib.SetTraceLogCallback(&RaylibLogBridge.LogCallback);
+
+        CoreLogger.Debug("Launching the game in DEBUG mode. GUI will be accessible.");
     }
 
     public static void Dispose()
@@ -181,4 +197,37 @@ public static class MainWindow
     }
 
     #endregion
+
+    unsafe static class RaylibLogBridge
+    {
+        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
+        public static void LogCallback(int logLevel, sbyte* text, sbyte* args)
+        {
+            var message = Logging.GetLogMessage(new IntPtr(text), new IntPtr(args));
+
+            ILogger raylibLog = Log.ForContext("Tag", "Raylib");
+
+            switch ((TraceLogLevel)logLevel)
+            {
+                case TraceLogLevel.Debug:
+                    raylibLog.Debug("{Message}", message);
+                    break;
+                case TraceLogLevel.Info:
+                    raylibLog.Information("{Message}", message);
+                    break;
+                case TraceLogLevel.Warning:
+                    raylibLog.Warning("{Message}", message);
+                    break;
+                case TraceLogLevel.Error:
+                    raylibLog.Error("{Message}", message);
+                    break;
+                case TraceLogLevel.Fatal:
+                    raylibLog.Fatal("{Message}", message);
+                    break;
+                default:
+                    raylibLog.Information("{Message}", message);
+                    break;
+            }
+        }
+    }
 }

@@ -21,7 +21,7 @@ public partial class GameMap
 
         if (ImGui.BeginMainMenuBar())
         {
-            ImGui.BeginMenu($"{Raylib.GetFPS()}FPS", false);
+            ImGui.BeginMenu($"MAP: [ID {MapId}] - {Raylib.GetFPS()}FPS", false);
 
             if (ImGui.BeginMenu("Tools"))
             {
