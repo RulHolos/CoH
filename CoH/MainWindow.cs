@@ -15,6 +15,7 @@ using CoH.Game.Views;
 using CoH.GameData;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using CoH.Assets.DataSheets;
 
 namespace CoH;
 
@@ -24,19 +25,32 @@ namespace CoH;
  * Named layers:
  * Player (Object Layer) : Where to render the player in the tile order.
  * Events (Tile Layer) : All tiles in the event layer are treated as events, they have custom attributes on tiled.
+ * 
+ * For skills and other battle things, do a .lua support for attacks. Like, animating them and defining behaviour.
+ * 
+ * Hot reloading of files in maps and objects?
+ * Like, do I hotreload the items when the file changes? Yes.
  */
 
 public static class MainWindow
 {
     public static Version? VersionNumber = Assembly.GetEntryAssembly()?.GetName().Version;
+#if DEBUG
+    // ONLY FOR DEBUG. Because I don't want to have to recompile every asset everytime.
+    public static string PathToResources = Path.Combine("D:\\Bordel sans nom\\Trucs en rapport avec Myara\\Jeux\\Myara 2 (Itération 2)\\CoH\\CoH", "Assets");
+    public static string PathToSave = Path.Combine("D:\\Bordel sans nom\\Trucs en rapport avec Myara\\Jeux\\Myara 2 (Itération 2)\\CoH\\CoH", "Save");
+#else
     public static string PathToResources = Path.Combine(Directory.GetCurrentDirectory(), "Assets");
     public static string PathToSave = Path.Combine(Directory.GetCurrentDirectory(), "Save");
+#endif
     public static Vector2 GameViewport;
 
     public static View FirstView { get; private set; } = new MainMenu();
     public static View? CurrentView { get; set; }
 
     public static ILogger CoreLogger = Log.ForContext("Tag", "Core");
+
+    private static bool QuitFlag = false;
 
     /// <summary>
     /// Initializes the game window and starts the game loop.<br/>
@@ -62,11 +76,23 @@ public static class MainWindow
 
         while (!Raylib.IsWindowReady())
             continue;
-        
+
+        if (!DataSheetsHandler.Load())
+        {
+            Dispose();
+            rlImGui.Shutdown();
+            Raylib.CloseAudioDevice();
+            Raylib.CloseWindow();
+            return;
+        }
+
         Startup();
 
         while (!Raylib.WindowShouldClose())
         {
+            if (QuitFlag)
+                break;
+
             float dt = Raylib.GetFrameTime();
 
             BeforeFrame(dt);
@@ -90,7 +116,7 @@ public static class MainWindow
 
     private static unsafe void CreateLogger()
     {
-        // Delete the log everytime it launches the game again?
+        // Delete the log everytime it launches the game again.
         string pathToLog = Path.Combine(Directory.GetCurrentDirectory(), "Engine.log");
         if (File.Exists(pathToLog))
             File.Delete(pathToLog);
@@ -197,6 +223,11 @@ public static class MainWindow
     }
 
     #endregion
+
+    public static void QuitGame()
+    {
+        QuitFlag = true;
+    }
 
     unsafe static class RaylibLogBridge
     {

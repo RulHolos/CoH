@@ -49,4 +49,22 @@
    <frame tileid="183" duration="500"/>
   </animation>
  </tile>
+ <tile id="196">
+  <animation>
+   <frame tileid="196" duration="500"/>
+   <frame tileid="197" duration="500"/>
+  </animation>
+ </tile>
+ <tile id="198">
+  <animation>
+   <frame tileid="198" duration="500"/>
+   <frame tileid="199" duration="500"/>
+  </animation>
+ </tile>
+ <tile id="200">
+  <animation>
+   <frame tileid="200" duration="500"/>
+   <frame tileid="201" duration="500"/>
+  </animation>
+ </tile>
 </tileset>

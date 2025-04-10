@@ -18,6 +18,7 @@ public struct SaveData()
     public uint TrainerId = (uint)Random.Shared.Next();
     public bool Gender = true; // True = Female; False = Male
     public uint Money = 0;
+    public DateTime SaveStartedAt = DateTime.Now;
     public Vector2 PositionOnMap = Vector2.Zero;
     public int CurrentMapId = 0;
     public sbyte FacingDir = 3; // 0 = Left, 1 = Right, 2 = Top, 3 = Bottom

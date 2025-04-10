@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +25,14 @@ public abstract class View
     public bool ShowGUI = false;
 #endif
 
+    public abstract ILogger Logger { get; set; }
+
     /// <summary>
     /// Your DON'T WANT to call <see cref="Load"/> in this constructor.
     /// </summary>
     public View()
     {
-
+        
     }
 
     /// <summary>
@@ -71,9 +74,10 @@ public abstract class View
     {
         if (NextView == null && view == null)
         {
-            Console.Error.WriteLine("Unable to switch view, there is no Next View.");
+            Logger.Error("Unable to switch view, there is no Next View.");
             return;
         }
+
         try
         {
             Unload();
@@ -84,7 +88,7 @@ public abstract class View
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Unable to switch views because of the following reason:\n{e}");
+            Logger.Error($"Unable to switch views because of the following reason:\n{e}");
         }
         finally
         {

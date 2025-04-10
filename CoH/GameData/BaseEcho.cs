@@ -15,6 +15,7 @@ namespace CoH.GameData;
 [Serializable]
 public unsafe struct BaseEcho
 {
+    public ushort Id;
     public string Name;
     public byte Cost; // 0-4 inclusive. ((cost * 10) + 80)
     public fixed ushort BaseSkills[5];

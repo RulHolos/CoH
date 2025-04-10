@@ -14,8 +14,15 @@ public enum SkillTarget
     Terrain
 }
 
+public enum SkillType
+{
+    Skill,
+    Item,
+    Switch,
+}
+
 [Serializable]
-public unsafe struct Skilldata
+public unsafe struct SkillData
 {
     public string Name;
     public byte Element;
@@ -23,7 +30,7 @@ public unsafe struct Skilldata
     public byte Accuracy;
     public byte Sp;
     public sbyte Priority;
-    public byte Type;
+    public SkillType Type;
     public ushort EffectId;
     public byte EffectChance;
     public SkillTarget EffectTarget; // 0 self; 1 opponent; 2 both; 3 terrain;

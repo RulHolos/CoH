@@ -16,8 +16,9 @@ public partial class MainMenu
     private Widget CurrentWidget => widgets[widgetIndex];
     private readonly CircularList<Widget> widgets = [];
 
-    private class Widget(int index, bool enabled, Action? callback = null)
+    private class Widget(int index, string label, bool enabled, Action? callback = null)
     {
+        public string DebugLabel = label;
         // Index determines the bound of the image.
         // When loading the image, index will devide the image in the height of the image devided by Index. Width is always maximum.
         public int Index = index;

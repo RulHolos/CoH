@@ -41,6 +41,8 @@ public enum TileType
 
 public partial class GameMap : View
 {
+    private static string PathToMap => Path.Combine(MainWindow.PathToResources, "Maps");
+
     public int MapId { get; private set; }
     public Map? Map { get; private set; } = null;
     public List<Texture2D> Tilesets { get; private set; } = [];
@@ -50,7 +52,7 @@ public partial class GameMap : View
     public float ScaleFactor = 4f;
     public RenderTexture2D RenderTarget;
 
-    public ILogger MapLogger;
+    public override ILogger Logger { get; set; }
 
     public GameMap(int mapId, bool fromSave = false)
         : base()
@@ -61,32 +63,32 @@ public partial class GameMap : View
         if (fromSave)
             Player.Position = SaveFile.SaveData.PositionOnMap;
 
-        MapLogger = Log.ForContext("Tag", $"MAP {MapId}");
+        Logger = Log.ForContext("Tag", $"MAP {MapId}");
     }
 
     public override void Load()
     {
         Loader mapLoader = Loader.Default();
-        string filePath = Path.Combine(MainWindow.PathToResources, $"{MapId}.tmx");
+        string filePath = Path.Combine(PathToMap, $"{MapId}.tmx");
         if (File.Exists(filePath))
             Map = mapLoader.LoadMap(filePath);
         else
-            MapLogger.Error($"MAP: [ID {MapId}] DOESN'T EXIST!!!");
+            Logger.Error($"MAP DOESN'T EXIST!!!");
 
         // Map didn't load, abort loading everything.
         // Should the map not loading crash the game or do something else?
         // For now, it throws an exception, because there is no obvious expected behaviour in this stage of development.
         if (Map == null)
-            throw new MapException($"MAP [ID {MapId}] Didn't load");
+            throw new MapException($"Map didn't load");
 
         Tilesets.AddRange(from Tileset tileset in Map.Tilesets
-                          select Raylib.LoadTexture(Path.Combine(MainWindow.PathToResources, tileset.Image.Value.Source)));
+                          select Raylib.LoadTexture(Path.Combine(PathToMap, tileset.Image.Value.Source)));
 
         RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / ScaleFactor), (int)(MainWindow.GameViewport.Y / ScaleFactor));
 
-        MapLogger.Debug($"Map Loaded successfully");
-        MapLogger.Debug($"Contains {Tilesets.Count} tileset(s)");
-        MapLogger.Debug($"Map size is {Map.Width}x{Map.Height} tiles");
+        Logger.Debug($"Map Loaded successfully");
+        Logger.Debug($"Contains {Tilesets.Count} tileset(s)");
+        Logger.Debug($"Map size is {Map.Width}x{Map.Height} tiles");
 
         Player.Load();
 
@@ -128,6 +130,8 @@ public partial class GameMap : View
         }  
 
         ScaleFactor = tempFactor;
+
+        SaveFile.SaveData.CurrentMapId = MapId;
 
         if (Raylib.IsKeyPressed(KeyboardKey.S))
             SaveFile.Save();
@@ -292,14 +296,14 @@ public partial class GameMap : View
             Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == trueTileId);
             if (tile != null && tile.Properties != null)
             {
-                MapLogger.Debug($"Checking tile {tile.ID}.");
+                Logger.Debug($"Checking tile {tile.ID}.");
                 foreach (var p in tile.Properties)
-                    MapLogger.Debug(p.Name);
+                    Logger.Debug(p.Name);
 
                 // TODO: Check for other tile properties.
                 if (tile.Properties.Any(p => p.Name == "Collision"))
                 {
-                    return (tile, TileType.Collide); // Tile has "Collide" property, can't walk on it
+                    return (tile, TileType.Collide); // Tile has "Collision" property, can't walk on it
                 }
             }
         }

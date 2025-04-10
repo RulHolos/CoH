@@ -1,4 +1,5 @@
-﻿using ImGuiNET;
+﻿using CoH.Game.Views.Battles;
+using ImGuiNET;
 using Raylib_cs;
 using rlImGui_cs;
 using System;
@@ -13,6 +14,7 @@ namespace CoH.Game.Views;
 public partial class GameMap
 {
     private bool RenderTextureWin = false;
+    public bool IgnoreCollisions = false;
 
     public override void RenderGUI(float deltaTime)
     {
@@ -26,6 +28,9 @@ public partial class GameMap
             if (ImGui.BeginMenu("Tools"))
             {
                 ImGui.MenuItem("Textures", string.Empty, ref RenderTextureWin);
+                ImGui.MenuItem("Ignore Collisions", string.Empty, ref IgnoreCollisions);
+                if (ImGui.MenuItem("Start Battle"))
+                    GoToNextView(new Battle());
 
                 ImGui.EndMenu();
             }

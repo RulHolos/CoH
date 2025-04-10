@@ -13,35 +13,31 @@ namespace CoH.Game.Views;
 
 public partial class MainMenu : View
 {
+    public override ILogger Logger { get; set; }
+
     public MainMenu()
         : base()
     {
+        Logger = Log.ForContext("Tag", "MainMenu");
     }
 
     public override void Load()
     {
         // New Game
-        widgets.Add(new(0, true,
-            () => {
-                GoToNextView(new GameMap(0));
-                Log.Debug("New Game");
-            }
-        ));
+        widgets.Add(new(0, "New Game", true, () => {
+            GoToNextView(new GameMap(1));
+            Logger.Debug("New Game");
+        }));
         // Continue
-        widgets.Add(new(1, SaveFile.SaveExists,
-            () =>
-            {
-                GoToNextView(new GameMap(SaveFile.SaveData.CurrentMapId, true));
-                Log.Debug("Continue");
-            }
-        ));
+        widgets.Add(new(1, "Continue", SaveFile.SaveExists, () => {
+            GoToNextView(new GameMap(SaveFile.SaveData.CurrentMapId, true));
+            Logger.Debug("Continue");
+        }));
         // Options
-        widgets.Add(new(2, true,
-            () =>
-            {
-
-            }
-        ));
+        widgets.Add(new(2, "Options", true, () => {
+            GoToNextView(new ConfigMenu());
+        }));
+        widgets.Add(new(3, "Quit Game", true, MainWindow.QuitGame));
 
         base.Load();
     }
@@ -62,20 +58,21 @@ public partial class MainMenu : View
 
         if (Raylib.IsKeyPressed(KeyboardKey.Up))
         {
-            widgetIndex = widgets.Previous().Index;
+            widgetIndex = widgets.PreviousSkip((index) => widgets[index].Disable).Index;
             CurrentWidget.ShakeTimer = 1;
-            Log.Debug($"New Widget Selected: {widgetIndex}");
+            Logger.Debug($"New Widget Selected: {CurrentWidget.DebugLabel}");
             // Play Select Sound;
         }
         else if (Raylib.IsKeyPressed(KeyboardKey.Down))
         {
-            widgetIndex = widgets.Next().Index;
+            widgetIndex = widgets.NextSkip((index) => widgets[index].Disable).Index;
             CurrentWidget.ShakeTimer = 1;
-            Log.Debug($"New Widget Selected: {widgetIndex}");
+            Logger.Debug($"New Widget Selected: {CurrentWidget.DebugLabel}");
             // Play Select Sound;
         }
         else if (Raylib.IsKeyPressed(KeyboardKey.W))
         {
+            Logger.Debug($"Widget Pressed: {CurrentWidget.DebugLabel}");
             CurrentWidget.Callback?.Invoke();
             // Play OK Sound;
         }

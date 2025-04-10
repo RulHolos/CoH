@@ -3,48 +3,50 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "0.tmx",
+    "activeFile": "1.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "0.tmx": {
-            "scale": 3,
+            "scale": 2,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 411.33333333333326,
-                "y": 202.83333333333331
+                "x": 266.5,
+                "y": 152.25
             }
         },
         "0.tsx": {
-            "scaleInDock": 1.5,
-            "scaleInEditor": 4
+            "scaleInDock": 2
+        },
+        "1.tmx": {
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 483,
+                "y": 481.5
+            }
         },
         "1.tsx": {
-            "scaleInDock": 1,
+            "scaleInDock": 2,
             "scaleInEditor": 4
         }
     },
-    "frame.defaultDuration": 1000,
-    "last.imagePath": "D:/Bordel sans nom/jeux/TPDP/Modding/Base/gn_dat5.arc/map/chip",
+    "frame.defaultDuration": 500,
+    "map.height": 51,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
+    "map.width": 195,
     "openFiles": [
         "0.tmx",
-        "0.tsx",
+        "1.tmx",
         "1.tsx"
     ],
     "project": "CoH.tiled-project",
-    "property.type": "bool",
     "recentFiles": [
+        "0.tmx",
         "1.tsx",
-        "0.tsx",
-        "0.tmx"
-    ],
-    "tileset.lastUsedFormat": "tsx",
-    "tileset.tileSize": {
-        "height": 16,
-        "width": 16
-    }
+        "1.tmx"
+    ]
 }

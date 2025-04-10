@@ -19,6 +19,24 @@ public class CircularList<T> : List<T>
         return this[Index];
     }
 
+    public T Previous()
+    {
+        Index--;
+        if (Index < 0)
+            Index = Count - 1;
+
+        return this[Index];
+    }
+
+    public T PreviousSkip(Func<int, bool> skipCommand)
+    {
+        Previous();
+        if (skipCommand(Index))
+            Previous();
+
+        return this[Index];
+    }
+
     public T Next()
     {
         Index++;
@@ -27,11 +45,11 @@ public class CircularList<T> : List<T>
         return this[Index];
     }
 
-    public T Previous()
+    public T NextSkip(Func<int, bool> skipCommand)
     {
-        Index--;
-        if (Index < 0)
-            Index = Count - 1;
+        Next();
+        if (skipCommand(Index))
+            Next();
 
         return this[Index];
     }

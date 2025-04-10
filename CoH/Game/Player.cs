@@ -49,54 +49,69 @@ public class Player : GameObject
         base.Unload();
     }
 
+    private float directionPressTimer = 0f;
+    private const float MaxDirectionOnlyPressTime = 2f;
+
     public override void Frame(float dt)
     {
         if (!isMoving)
         {
             Vector2 newMovementDirection = Vector2.Zero;
             sbyte newFacingDirection = FacingDirection;
+            bool directionPressed = false;
 
             if (Raylib.IsKeyDown(KeyboardKey.Down))
             {
                 newMovementDirection = new Vector2(0, 1);
                 newFacingDirection = 0;
-                isVirtualMoving = true;
+                directionPressed = true;
             }
             else if (Raylib.IsKeyDown(KeyboardKey.Up))
             {
                 newMovementDirection = new Vector2(0, -1);
                 newFacingDirection = 3;
-                isVirtualMoving = true;
+                directionPressed = true;
             }
             else if (Raylib.IsKeyDown(KeyboardKey.Right))
             {
                 newMovementDirection = new Vector2(1, 0);
                 newFacingDirection = 2;
-                isVirtualMoving = true;
+                directionPressed = true;
             }
             else if (Raylib.IsKeyDown(KeyboardKey.Left))
             {
                 newMovementDirection = new Vector2(-1, 0);
                 newFacingDirection = 1;
+                directionPressed = true;
+            }
+
+            if (directionPressed)
+            {
+                directionPressTimer += dt * 60f; // convert dt to approximate frame count
+                FacingDirection = newFacingDirection;
+
+                if (directionPressTimer >= MaxDirectionOnlyPressTime)
+                {
+                    Vector2 newTargetPosition = Position + newMovementDirection;
+                    if (CanMoveToTile(newTargetPosition))
+                    {
+                        movementDirection = newMovementDirection;
+                        isMoving = true;
+                        TargetPosition = newTargetPosition;
+                    }
+                }
+
                 isVirtualMoving = true;
             }
             else
             {
+                directionPressTimer = 0f;
                 isVirtualMoving = false;
             }
-
-            Vector2 newTargetPosition = Position + newMovementDirection;
-            if (newMovementDirection != Vector2.Zero && CanMoveToTile(newTargetPosition))
-            {
-                movementDirection = newMovementDirection;
-                isMoving = true;
-                TargetPosition = newTargetPosition;
-            }
-            FacingDirection = newFacingDirection;
         }
         else
         {
-            float currentSpeed = Raylib.IsKeyDown(KeyboardKey.X) ? RunSpeed : WalkSpeed;
+            float currentSpeed = IsRunning() ? RunSpeed : WalkSpeed;
 
             Vector2 moveStep = movementDirection * currentSpeed * dt;
             Position += moveStep;
@@ -123,6 +138,9 @@ public class Player : GameObject
     /// <returns>True if the player can move to this tile. Otherwise; false.</returns>
     private bool CanMoveToTile(Vector2 targetPos)
     {
+        if (Mappe.IgnoreCollisions) // Only in debug mode. Disables collision with tiles.
+            return true;
+
         /*
          * Idea: Go with a tileset with numbers for the tiles collision properties (can have multiple collision layers for complex maps).
          * Like TPDP does it basically. That way I don't have to check each and every single tile layer for every tiles, only the collision layers.
@@ -133,7 +151,9 @@ public class Player : GameObject
             if (layer is TileLayer tileLayer)
             {
                 uint tileIndex = (uint)(targetPos.Y * tileLayer.Width + targetPos.X);
-                uint tileId = tileLayer.Data.Value.GlobalTileIDs.Value[tileIndex];
+                uint tileId;
+                try { tileId = tileLayer.Data.Value.GlobalTileIDs.Value[tileIndex]; }
+                catch { tileId = 0; }
 
                 if (tileId == 0) return true; // No tile, allow movement
 
@@ -143,9 +163,7 @@ public class Player : GameObject
                     Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == trueTileId);
                     if (tile != null && tile.Properties != null)
                     {
-                        Log.Debug($"Checking tile {tile.ID}.");
-                        foreach (var p in tile.Properties)
-                            Log.Debug(p.Name);
+                        Mappe.Logger.Debug($"Checking tile {tile.ID} : {string.Join(", ", tile.Properties.Select(p => p.Name))}");
 
                         // TODO: Check for other tile properties.
                         if (tile.Properties.Any(p => p.Name == "Collision"))
@@ -178,14 +196,15 @@ public class Player : GameObject
 
     public override void Render(float dt)
     {
-        int animationSpeed = 16;
+        bool isRunning = IsRunning();
+
+        int animationSpeed = isRunning ? 10 : 16;
         int[] animationFrames = [0, 1, 0, 2]; // Return to first animation between each frame. (It's weird if it doesn't)
 
         int frameIndex = (timer / animationSpeed) % animationFrames.Length;
         int frame = animationFrames[frameIndex];
 
         int multiplier = FacingDirection;
-        bool isRunning = Raylib.IsKeyDown(KeyboardKey.X);
 
         if (isRunning && isVirtualMoving)
             multiplier += 4;

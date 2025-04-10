@@ -9,39 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\0.tmx" />
-    <None Remove="Assets\0.tsx" />
-    <None Remove="Assets\001.png" />
-    <None Remove="Assets\002.png" />
-    <None Remove="Assets\1.tsx" />
-    <None Remove="Assets\Player\GirlChip.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\0.tmx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\0.tsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\1.tsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Player\GirlChip.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="border.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
     <PackageReference Include="DotTiled" Version="0.3.0" />
     <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
@@ -50,12 +25,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\001.png">
+    <None Update="Assets\0.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\002.png">
+    </None>
+    <None Update="Assets\0.tsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
+    <None Update="Assets\001.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\002.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\1.tsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Player\GirlChip.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

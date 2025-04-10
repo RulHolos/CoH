@@ -225,6 +225,16 @@
    <frame tileid="119" duration="1000"/>
   </animation>
  </tile>
+ <tile id="120">
+  <properties>
+   <property name="Collision" type="bool" value="true"/>
+  </properties>
+ </tile>
+ <tile id="121">
+  <properties>
+   <property name="Collision" type="bool" value="true"/>
+  </properties>
+ </tile>
  <tile id="122">
   <properties>
    <property name="Collision" type="bool" value="true"/>
