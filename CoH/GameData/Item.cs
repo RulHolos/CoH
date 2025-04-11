@@ -1,5 +1,7 @@
-﻿using CsvHelper;
+﻿using CoH.Game.Views;
+using CsvHelper;
 using CsvHelper.Configuration;
+using ImGuiNET;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -20,7 +22,7 @@ public enum ItemCategory
     Key,
 }
 
-public struct Item()
+public struct Item() : GUIDrawable
 {
     public uint ItemId { get; set; } = 0;
     public string Name { get; set; } = "";
@@ -31,6 +33,25 @@ public struct Item()
     public uint EffectId { get; set; } = 0;
     public uint SellPrice { get; set; } = 100;
     public bool CanBeDiscarded { get; set; } = true;
+
+    public void RenderGUI(float deltaTime)
+    {
+        ImGui.PushID($"##Item{ItemId}");
+
+        if (ImGui.TreeNode($"[ID {ItemId}] - {Name}"))
+        {
+            ImGui.Text($"Quantity = {Quantity}/{Maximum}");
+            ImGui.Text($"Category = {Enum.GetName(Category)}");
+            ImGui.Text($"EffectId = {EffectId}");
+            ImGui.Text($"SellPrice = {SellPrice}");
+            ImGui.Text($"Can Be Discarded = {CanBeDiscarded}");
+            ImGui.TextWrapped(Description);
+
+            ImGui.TreePop();
+        }
+
+        ImGui.PopID();
+    }
 
     public override string ToString() => $"Item [ID {ItemId}] [Eff {EffectId}] {Name} - {Quantity}/{Maximum} - {Enum.GetName(typeof(ItemCategory), Category)}.";
 }

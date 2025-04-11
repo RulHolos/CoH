@@ -46,7 +46,7 @@ public partial class GameMap
         if (!RenderTextureWin)
             return;
 
-        if (ImGui.Begin("Loaded Textures"))
+        if (ImGui.Begin("Loaded Textures", ref RenderTextureWin))
         {
             if (ImGui.CollapsingHeader("Tilesets"))
             {

@@ -216,6 +216,8 @@ public static class MainWindow
     {
         rlImGui.Begin();
 
+        //ImGui.ShowDemoWindow();
+
         // Do things.
         CurrentView?.RenderGUI(deltaTime);
 

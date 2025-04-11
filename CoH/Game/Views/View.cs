@@ -11,7 +11,7 @@ namespace CoH.Game.Views;
 /// <summary>
 /// Base class for views. (Main Menu, map, battle, ...)
 /// </summary>
-public abstract class View
+public abstract class View : GUIDrawable
 {
     public View? PreviousView { get; private set; }
     public View? NextView { get; private set; }
@@ -53,7 +53,7 @@ public abstract class View
 
     public abstract void Frame(float deltaTime);
     public abstract void Render(float deltaTime);
-    public virtual void RenderGUI(float deltaTime) { }
+    public abstract void RenderGUI(float deltaTime);
 
     public virtual void BeforeFrame(float deltaTime)
     {
@@ -95,4 +95,9 @@ public abstract class View
             NextView?.Unload();
         }
     }
+}
+
+public interface GUIDrawable
+{
+    public void RenderGUI(float deltaTime);
 }

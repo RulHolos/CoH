@@ -57,6 +57,11 @@ public partial class Battle : View
         
     }
 
+    public override void RenderGUI(float deltaTime)
+    {
+        
+    }
+
     private void ResolveAction(ref AliveEcho attacker, ref AliveEcho defender, SkillData skill)
     {
         switch (skill.Type)

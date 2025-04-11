@@ -26,4 +26,9 @@ public partial class ConfigMenu : View
     {
         
     }
+
+    public override void RenderGUI(float deltaTime)
+    {
+
+    }
 }

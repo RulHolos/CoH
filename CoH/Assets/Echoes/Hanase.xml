@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Echo Name="Hanase" DexName="Hanase Koma">
+	<Cost>2</Cost>
+	<Skills>
+		<Skill Id="1"/>
+		<Skill Id="2"/>
+		<Skill Id="3"/>
+		<Skill Id="4"/>
+		<Skill Id="5"/>
+	</Skills>
+	<Drops>
+		<Item Id="1"/>
+		<Item Id="2"/>
+		<Item Id="3"/>
+		<Item Id="4"/>
+	</Drops>
+	<Styles>
+		<Style StyleType="Normal">
+			<Elements Element1="Fire" Element2="Warped"/>
+			<Stats>
+				<HP>65</HP>
+				<FoAtk>55</FoAtk>
+				<FoDef>55</FoDef>
+				<SpAtk>50</SpAtk>
+				<SpDef>50</SpDef>
+				<Speed>50</Speed>
+			</Stats>
+			<Abilities Ability1="45" Ability2="89"/>
+			<Skills>
+				<Skill Id="0"/>
+				<Skill Id="1"/>
+				<Skill Id="2"/>
+				<Skill Id="3"/>
+				<Skill Id="4"/>
+				<Skill Id="5"/>
+				<Skill Id="6"/>
+				<Skill Id="7"/>
+				<Skill Id="8"/>
+				<Skill Id="9"/>
+				<Skill Id="10"/>
+			</Skills>
+			<Level100Skill Id="100"/>
+			<SkillCards>1;2;4;8;16;32;64;128</SkillCards> <!--Separated by commas-->
+			<Level70Skills>
+				<Skill Id="0"/>
+				<Skill Id="1"/>
+				<Skill Id="2"/>
+				<Skill Id="3"/>
+				<Skill Id="4"/>
+				<Skill Id="5"/>
+				<Skill Id="6"/>
+				<Skill Id="7"/>
+			</Level70Skills>
+		</Style>
+	</Styles>
+</Echo>

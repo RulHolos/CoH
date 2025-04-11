@@ -1,4 +1,6 @@
-﻿using CoH.Game.Ext;
+﻿using CoH.Assets.DataSheets;
+using CoH.Game.Ext;
+using CoH.GameData;
 using DotTiled;
 using ImGuiNET;
 using Raylib_cs;
@@ -15,6 +17,8 @@ public partial class MainMenu
     private int widgetIndex = 0;
     private Widget CurrentWidget => widgets[widgetIndex];
     private readonly CircularList<Widget> widgets = [];
+
+    private bool ShowDataSheet = false;
 
     private class Widget(int index, string label, bool enabled, Action? callback = null)
     {
@@ -44,10 +48,34 @@ public partial class MainMenu
 
             if (ImGui.BeginMenu("Tools"))
             {
+                ImGui.MenuItem("DataSheets", string.Empty, ref ShowDataSheet);
                 ImGui.EndMenu();
             }
 
             ImGui.EndMainMenuBar();
+        }
+
+        if (ShowDataSheet)
+            DataSheet(deltaTime);
+    }
+
+    private void DataSheet(float deltaTime)
+    {
+        if (ImGui.Begin("Data Sheets"))
+        {
+            if (ImGui.CollapsingHeader("Items"))
+                foreach (Item item in DataSheetsHandler.Items)
+                    item.RenderGUI(deltaTime);
+
+            if (ImGui.CollapsingHeader("Echoes"))
+                foreach (BaseEcho echo in DataSheetsHandler.Echoes)
+                    echo.RenderGUI(deltaTime);
+
+            if (ImGui.CollapsingHeader("Skills"))
+                foreach (SkillData skill in DataSheetsHandler.Skills)
+                    skill.RenderGUI(deltaTime);
+
+            ImGui.End();
         }
     }
 }
