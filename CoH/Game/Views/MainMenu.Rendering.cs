@@ -75,6 +75,10 @@ public partial class MainMenu
                 foreach (SkillData skill in DataSheetsHandler.Skills)
                     skill.RenderGUI(deltaTime);
 
+            if (ImGui.CollapsingHeader("Abilities"))
+                foreach (Ability ability in DataSheetsHandler.Abilities)
+                    ability.RenderGUI(deltaTime);
+
             ImGui.End();
         }
     }

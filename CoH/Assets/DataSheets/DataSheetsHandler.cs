@@ -16,15 +16,19 @@ public static class DataSheetsHandler
     public static ILogger Logger = Log.ForContext("Tag", "DataSheets");
 
     public static List<Item> Items { get; private set; } = [];
+    //public static HotSheet<Item, ItemCsvMap> Items { get; private set; }
     public static List<SkillData> Skills { get; private set; } = [];
     public static List<BaseEcho> Echoes { get; private set; } = [];
+    public static List<Ability> Abilities { get; private set; } = [];
 
     public static bool Load()
     {
         try
         {
             Items = LoadCsv<Item, ItemCsvMap>("Items");
+            //Items = new("Items");
             Skills = LoadCsv<SkillData, SkillDataMap>("Skills");
+            Abilities = LoadCsv<Ability, AbilityMap>("Abilities");
             Echoes = LoadEchoes();
 
             Logger.Information("All Data Sheets have been loaded successfully");
@@ -41,6 +45,7 @@ public static class DataSheetsHandler
     {
         Items.Clear();
         Skills.Clear();
+        Abilities.Clear();
         Echoes.Clear();
     }
 

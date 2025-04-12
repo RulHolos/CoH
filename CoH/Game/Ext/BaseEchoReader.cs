@@ -66,6 +66,13 @@ public static class BaseEchoReader
             for (int j = 0; j < 8; j++) // Crashes if there's not 8
                 style.Level70Skills[j] = ushort.Parse(lvl70Nodes[j]!.Attributes!["Id"]!.Value);
 
+            var metaNodes = styleNode.SelectNodes("Meta")!;
+            foreach (XmlNode metaNode in metaNodes)
+            {
+                Enum.TryParse(typeof(StyleMeta), metaNode.InnerText!, true, out object? result);
+                style.Meta |= result != null ? (StyleMeta)result : StyleMeta.None;
+            }
+
             echo.Styles[i] = style;
         }
 

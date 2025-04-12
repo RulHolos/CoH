@@ -19,6 +19,7 @@ public enum BattleState
 {
     WaitingForInput,
     ResolvingAction,
+    DisplayingText,
     Switching,
     Victory,
     Defeat,
@@ -41,7 +42,18 @@ public partial class Battle : View
 {
     public override ILogger Logger { get; set; }
 
+    private BattleType battleType;
+    private BattleState battleState;
+
+    private Tuple<AliveEcho, AliveEcho> terrainEchoes;
+
     public Battle()
+        : this(BattleType.Wild)
+    {
+
+    }
+
+    public Battle(BattleType battleType)
         : base()
     {
         Logger = Log.ForContext("Tag", "Battle");
@@ -73,5 +85,10 @@ public partial class Battle : View
             case SkillType.Switch:
                 break;
         }
+    }
+
+    private void AdjustSkill()
+    {
+        // Adjust skill accuracy, priority, etc... based on the lua file and current conditions of the fight.
     }
 }

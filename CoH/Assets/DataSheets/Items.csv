@@ -1,4 +1,4 @@
 ItemId,Name,Description,Maximum,Category,EffectId,SellPrice,CanBeDiscarded
-0,"Item000","This is Item000",999,Tools,0,100,True
-1,"Item001","This is Item001",999,Tools,0,100,True
-2,"Item002","This is Item002",10,Key,9,0,False
+0,Item000,This is Item000,999,Tools,0,100,True
+1,Item001,This is Item001,999,Tools,0,100,True
+2,Item002,This is Item002,10,Key,9,0,False

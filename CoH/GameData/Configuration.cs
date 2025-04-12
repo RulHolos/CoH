@@ -16,6 +16,9 @@ public struct Config()
     [DefaultValue(960)] public int WindowSizeX { get; set; } = 960;
     [DefaultValue(720)] public int WindowSizeY { get; set; } = 720;
     [DefaultValue(false)] public bool VSync { get; set; } = false;
+    [DefaultValue(30)] public int BGMVolume { get; set; } = 30;
+    [DefaultValue(20)] public int SEVolume { get; set; } = 20;
+    [DefaultValue(0)] public sbyte TextSpeed { get; set; } = 0; // Maybe an enum? Since it's 3 possible values...
 }
 
 public static class Configuration

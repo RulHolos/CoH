@@ -194,6 +194,7 @@ public class Player : GameObject
             || Raylib.IsKeyDown(KeyboardKey.RightShift);
     }
 
+    // TODO: There's some stuttering when moving sometimes. Maybe relating to the dt or the timer reseting too late or too early?
     public override void Render(float dt)
     {
         bool isRunning = IsRunning();

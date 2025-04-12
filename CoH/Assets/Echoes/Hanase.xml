@@ -51,6 +51,7 @@
 				<Skill Id="6"/>
 				<Skill Id="7"/>
 			</Level70Skills>
+			<Meta>HasOtherForms</Meta>
 		</Style>
 	</Styles>
 </Echo>

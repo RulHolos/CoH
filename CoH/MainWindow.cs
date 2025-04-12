@@ -61,30 +61,13 @@ public static class MainWindow
         CreateLogger();
 
         Config conf = Configuration.Load();
-        GameViewport = new(conf.WindowSizeX, conf.WindowSizeY);
         SaveFile.Load();
 
-        Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.HighDpiWindow | ConfigFlags.VSyncHint);
-        Raylib.InitWindow(conf.WindowSizeX, conf.WindowSizeY, $"Myara 2 ~ Cycle of Hakurama | v{VersionNumber}");
-        Raylib.SetExitKey(KeyboardKey.Null);
-        Raylib.SetTargetFPS(120);
-
-        Raylib.InitAudioDevice();
-
-        rlImGui.Setup(true, true);
-        ImGui.GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
+        CreateRaylibContext();
+        DataSheetsHandler.Load();
 
         while (!Raylib.IsWindowReady())
             continue;
-
-        if (!DataSheetsHandler.Load())
-        {
-            Dispose();
-            rlImGui.Shutdown();
-            Raylib.CloseAudioDevice();
-            Raylib.CloseWindow();
-            return;
-        }
 
         Startup();
 
@@ -137,6 +120,23 @@ public static class MainWindow
         Raylib.SetTraceLogCallback(&RaylibLogBridge.LogCallback);
 
         CoreLogger.Debug("Launching the game in DEBUG mode. GUI will be accessible.");
+    }
+
+    private static void CreateRaylibContext()
+    {
+        ref Config conf = ref Configuration.Default;
+
+        GameViewport = new(conf.WindowSizeX, conf.WindowSizeY);
+
+        Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.HighDpiWindow | ConfigFlags.VSyncHint);
+        Raylib.InitWindow(conf.WindowSizeX, conf.WindowSizeY, $"Myara 2 ~ Cycle of Hakurama | v{VersionNumber}");
+        Raylib.SetExitKey(KeyboardKey.Null);
+        Raylib.SetTargetFPS(120);
+
+        Raylib.InitAudioDevice();
+
+        rlImGui.Setup(true, true);
+        ImGui.GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
     }
 
     public static void Dispose()
