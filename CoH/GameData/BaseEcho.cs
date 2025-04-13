@@ -49,7 +49,7 @@ public unsafe struct BaseEcho : GUIDrawable
     public ushort Id;
     public string Name;
     public string DexName;
-    public byte Cost; // 0-4 inclusive. ((cost * 10) + 80)
+    public byte Cost; // 0-3 inclusive. ((cost * 10) + 80). Also dictates the level rank. Higher cost means slower leveling.
     public fixed ushort BaseSkills[5];
     public fixed ushort ItemDropTable[4];
     public int EchoDexIndex;
@@ -79,6 +79,8 @@ public unsafe struct BaseEcho : GUIDrawable
 
         ImGui.PopID();
     }
+
+    public int GetRealCost() => (Cost * 10) + 80;
 }
 
 [InlineArray(4)]

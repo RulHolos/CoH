@@ -32,6 +32,13 @@ public enum Element
     Light, Dark, Nether, Poison, Fighting, Illusion, Sound, Warped
 }
 
+public enum SkillStat
+{
+    None,
+    Focus,
+    Spread,
+}
+
 [Serializable]
 public unsafe struct SkillData() : GUIDrawable
 {
@@ -43,6 +50,7 @@ public unsafe struct SkillData() : GUIDrawable
     public byte Sp { get; set; } = 20;
     public sbyte Priority { get; set; } = 0;
     public SkillType Type { get; set; } = SkillType.Skill;
+    public SkillStat Stat { get; set; } = SkillStat.Focus;
     public ushort EffectId { get; set; } = 0;
     public byte EffectChance { get; set; } = 100;
     public SkillTarget EffectTarget { get; set; } = SkillTarget.Opponent;
@@ -59,6 +67,7 @@ public unsafe struct SkillData() : GUIDrawable
             ImGui.Text($"Sp = {Sp}");
             ImGui.Text($"Priority = {Priority}");
             ImGui.Text($"Type = {Enum.GetName(Type)}");
+            ImGui.Text($"Stat = {Enum.GetName(Stat)}");
             ImGui.Text($"EffectId = {EffectId}");
             ImGui.Text($"EffectChance = {EffectChance}");
             ImGui.Text($"EffectTarget = {Enum.GetName(EffectTarget)}");

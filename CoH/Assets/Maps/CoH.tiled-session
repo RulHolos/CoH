@@ -12,19 +12,19 @@
             "scale": 2,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 266.5,
-                "y": 152.25
+                "x": 191,
+                "y": 117.75
             }
         },
         "0.tsx": {
             "scaleInDock": 2
         },
         "1.tmx": {
-            "scale": 1,
-            "selectedLayer": 2,
+            "scale": 0.5,
+            "selectedLayer": 9,
             "viewCenter": {
-                "x": 483,
-                "y": 481.5
+                "x": 1220,
+                "y": 197
             }
         },
         "1.tsx": {
@@ -33,6 +33,7 @@
         }
     },
     "frame.defaultDuration": 500,
+    "last.imagePath": "D:/Bordel sans nom/Trucs en rapport avec Myara/Jeux/Myara 2 (Itération 2)/CoH/CoH/Assets/Maps",
     "map.height": 51,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
@@ -48,5 +49,10 @@
         "0.tmx",
         "1.tsx",
         "1.tmx"
-    ]
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
 }

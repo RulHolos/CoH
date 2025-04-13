@@ -150,6 +150,8 @@ public class Player : GameObject
         {
             if (layer is TileLayer tileLayer)
             {
+                if (!tileLayer.Name.Contains("collision", StringComparison.CurrentCultureIgnoreCase))
+                    continue;
                 uint tileIndex = (uint)(targetPos.Y * tileLayer.Width + targetPos.X);
                 uint tileId;
                 try { tileId = tileLayer.Data.Value.GlobalTileIDs.Value[tileIndex]; }
@@ -160,8 +162,10 @@ public class Player : GameObject
                 Tileset? tileset = Mappe.GetTilesetForTile(tileId, out uint trueTileId, out _);
                 if (tileset != null)
                 {
-                    Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == trueTileId);
-                    if (tile != null && tile.Properties != null)
+                    if (trueTileId == 0) return false; // Collision
+
+                    //Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == trueTileId);
+                    /*if (tile != null && tile.Properties != null)
                     {
                         Mappe.Logger.Debug($"Checking tile {tile.ID} : {string.Join(", ", tile.Properties.Select(p => p.Name))}");
 
@@ -174,7 +178,7 @@ public class Player : GameObject
                         {
                             return isSwimming;
                         }
-                    }
+                    }*/
                 }
             }
         }

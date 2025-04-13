@@ -1,4 +1,5 @@
 ﻿using CoH.GameData;
+using ImGuiNET;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,6 @@ public enum BattleState
 {
     WaitingForInput,
     ResolvingAction,
-    DisplayingText,
     Switching,
     Victory,
     Defeat,
@@ -90,5 +90,14 @@ public partial class Battle : View
     private void AdjustSkill()
     {
         // Adjust skill accuracy, priority, etc... based on the lua file and current conditions of the fight.
+    }
+
+    private void RawDamage(ref AliveEcho attacker, ref AliveEcho defender, SkillData skill)
+    {
+        //int atkStat = () ? attacker: ;
+        int defStat;
+
+        float leveldmg = ((2 * attacker.GetLevel()) / 5) + 2;
+        //float powerAd = leveldmg * skill.Power * ();
     }
 }

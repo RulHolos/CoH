@@ -37,6 +37,8 @@ public enum TileType
     RampRight,
     RampDown,
     RampUp,
+    Grass,
+    BlueGrass,
 }
 
 public partial class GameMap : View
