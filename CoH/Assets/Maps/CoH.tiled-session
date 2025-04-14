@@ -12,22 +12,26 @@
             "scale": 2,
             "selectedLayer": 4,
             "viewCenter": {
-                "x": 191,
-                "y": 117.75
+                "x": 240,
+                "y": 160
             }
         },
         "0.tsx": {
             "scaleInDock": 2
         },
         "1.tmx": {
-            "scale": 0.5,
-            "selectedLayer": 9,
+            "scale": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 1220,
-                "y": 197
+                "x": 593,
+                "y": 490.5
             }
         },
         "1.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 4
+        },
+        "Col.tsx": {
             "scaleInDock": 2,
             "scaleInEditor": 4
         }
@@ -42,11 +46,13 @@
     "openFiles": [
         "0.tmx",
         "1.tmx",
-        "1.tsx"
+        "1.tsx",
+        "Col.tsx"
     ],
     "project": "CoH.tiled-project",
     "recentFiles": [
         "0.tmx",
+        "Col.tsx",
         "1.tsx",
         "1.tmx"
     ],

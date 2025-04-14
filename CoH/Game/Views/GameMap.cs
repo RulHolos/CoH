@@ -29,7 +29,7 @@ public class MapException : Exception
 /// </summary>
 public enum TileType
 {
-    None,
+    None = -1,
     Collide,
     Water,
     Waterfall,
@@ -193,16 +193,30 @@ public partial class GameMap : View
                 uint width = tileLayer.Width;
                 uint[] tileData = tileLayer.Data.Value.GlobalTileIDs.Value;
 
-                for (uint index = 0; index < tileData.Length; index++)
+                // ### AVOID RENDERING OF OFFSCREEN TILES ### //
+                int occlusionRadius = 8;
+                //int playerTileX = (int)ScreenCamera.Target.X;
+                //int playerTileY = (int)ScreenCamera.Target.Y;
+                int playerTileX = (int)Player.Position.X;
+                int playerTileY = (int)Player.Position.Y;
+
+                int startX = Math.Max(playerTileX - occlusionRadius, 0);
+                int endX = Math.Min(playerTileX + occlusionRadius, (int)tileLayer.Width - 1);
+                int startY = Math.Max(playerTileY - occlusionRadius, 0);
+                int endY = Math.Min(playerTileY + occlusionRadius, (int)tileLayer.Height - 1);
+
+                for (int y = startY; y <= endY; y++)
                 {
-                    uint tileId = tileData[index];
-                    if (tileId == 0)
-                        continue; // No tile
+                    for (int x = startX; x <= endX; x++)
+                    {
+                        uint index = (uint)(y * tileLayer.Width + x);
+                        uint tileId = tileData[index];
 
-                    uint x = index % width;
-                    uint y = index / width;
+                        if (tileId == 0)
+                            continue;
 
-                    RenderTile(tileLayer, x, y, tileId, deltaTime);
+                        RenderTile(tileLayer, (uint)x, (uint)y, tileId, deltaTime);
+                    }
                 }
             }
         }

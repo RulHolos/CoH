@@ -26,6 +26,8 @@ public class Player : GameObject
     private bool isSwimming = false;
     private Vector2 movementDirection = Vector2.Zero;
 
+    public bool CanMove = true;
+
     private int timer = 0;
 
     private readonly GameMap Mappe;
@@ -54,7 +56,7 @@ public class Player : GameObject
 
     public override void Frame(float dt)
     {
-        if (!isMoving)
+        if (!isMoving && CanMove)
         {
             Vector2 newMovementDirection = Vector2.Zero;
             sbyte newFacingDirection = FacingDirection;
@@ -90,15 +92,13 @@ public class Player : GameObject
                 directionPressTimer += dt * 60f; // convert dt to approximate frame count
                 FacingDirection = newFacingDirection;
 
-                if (directionPressTimer >= MaxDirectionOnlyPressTime)
+                Vector2 newTargetPosition = Position + newMovementDirection;
+                TargetPosition = newTargetPosition;
+
+                if (directionPressTimer >= MaxDirectionOnlyPressTime && CanMoveToTile(newTargetPosition))
                 {
-                    Vector2 newTargetPosition = Position + newMovementDirection;
-                    if (CanMoveToTile(newTargetPosition))
-                    {
-                        movementDirection = newMovementDirection;
-                        isMoving = true;
-                        TargetPosition = newTargetPosition;
-                    }
+                    movementDirection = newMovementDirection;
+                    isMoving = true;
                 }
 
                 isVirtualMoving = true;
@@ -119,11 +119,15 @@ public class Player : GameObject
             if (Vector2.Distance(Position, TargetPosition) <= currentSpeed * dt)
             {
                 Position = TargetPosition;
+                TargetPosition = Position + movementDirection;
                 SaveFile.SaveData.PositionOnMap = Position;
                 SaveFile.SaveData.FacingDir = FacingDirection;
                 isMoving = false;
             }
         }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.W))
+            Interact(TargetPosition);
 
         if (isVirtualMoving)
             timer++;
@@ -157,32 +161,46 @@ public class Player : GameObject
                 try { tileId = tileLayer.Data.Value.GlobalTileIDs.Value[tileIndex]; }
                 catch { tileId = 0; }
 
-                if (tileId == 0) return true; // No tile, allow movement
+                if (tileId == 0) { isSwimming = false; return true; } // No tile, allow movement and reset swimming state.
 
                 Tileset? tileset = Mappe.GetTilesetForTile(tileId, out uint trueTileId, out _);
                 if (tileset != null)
                 {
-                    if (trueTileId == 0) return false; // Collision
-
-                    //Tile? tile = tileset.Tiles.FirstOrDefault(t => t.ID == trueTileId);
-                    /*if (tile != null && tile.Properties != null)
-                    {
-                        Mappe.Logger.Debug($"Checking tile {tile.ID} : {string.Join(", ", tile.Properties.Select(p => p.Name))}");
-
-                        // TODO: Check for other tile properties.
-                        if (tile.Properties.Any(p => p.Name == "Collision"))
-                        {
-                            return false; // Tile has "Collide" property, can't walk on it
-                        }
-                        if (tile.Properties.Any(p => p.Name == "Water"))
-                        {
-                            return isSwimming;
-                        }
-                    }*/
+                    if (trueTileId == (int)TileType.Collide) return false; // Collision
+                    if (trueTileId == (int)TileType.Water) return isSwimming; // Water collider
                 }
             }
         }
         return true; // Allow movement by default is all other checks failed or were ignored.
+    }
+
+    private void Interact(Vector2 targetPos)
+    {
+        foreach (BaseLayer layer in Mappe.Map!.Layers)
+        {
+            if (layer is TileLayer tileLayer)
+            {
+                if (!tileLayer.Name.Contains("collision", StringComparison.CurrentCultureIgnoreCase))
+                    continue;
+                uint tileIndex = (uint)(targetPos.Y * tileLayer.Width + targetPos.X);
+                uint tileId;
+                try { tileId = tileLayer.Data.Value.GlobalTileIDs.Value[tileIndex]; }
+                catch { tileId = 0; }
+
+                if (tileId == 0) return;
+
+                Tileset? tileset = Mappe.GetTilesetForTile(tileId, out uint trueTileId, out _);
+                if (tileset != null)
+                {
+                    if (trueTileId == (int)TileType.Water)
+                    {
+                        isSwimming = true;
+                        Position = TargetPosition;
+                        Mappe.Logger.Information("Pressed Water");
+                    }
+                }
+            }
+        }
     }
 
     /// <summary>
