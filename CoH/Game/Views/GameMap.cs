@@ -54,6 +54,8 @@ public partial class GameMap : View
     public float ScaleFactor = 4f;
     public RenderTexture2D RenderTarget;
 
+    public Vector4 BackgroundPattern { get; private set; } = Vector4.Zero;
+
     public override ILogger Logger { get; set; }
 
     public GameMap(int mapId, bool fromSave = false)
@@ -119,6 +121,9 @@ public partial class GameMap : View
 
         if (Raylib.IsKeyPressed(KeyboardKey.F3))
             ShowGUI = !ShowGUI;
+
+        if (Raylib.IsKeyPressed(KeyboardKey.F2))
+            IgnoreCollisions = !IgnoreCollisions;
 
         if (Raylib.IsKeyPressed(KeyboardKey.Q))
             tempFactor += 0.1f;
@@ -191,31 +196,55 @@ public partial class GameMap : View
             if (layer is TileLayer tileLayer)
             {
                 uint width = tileLayer.Width;
+                uint height = tileLayer.Height;
                 uint[] tileData = tileLayer.Data.Value.GlobalTileIDs.Value;
 
                 // ### AVOID RENDERING OF OFFSCREEN TILES ### //
                 int occlusionRadius = 8;
-                //int playerTileX = (int)ScreenCamera.Target.X;
-                //int playerTileY = (int)ScreenCamera.Target.Y;
                 int playerTileX = (int)Player.Position.X;
                 int playerTileY = (int)Player.Position.Y;
 
-                int startX = Math.Max(playerTileX - occlusionRadius, 0);
-                int endX = Math.Min(playerTileX + occlusionRadius, (int)tileLayer.Width - 1);
-                int startY = Math.Max(playerTileY - occlusionRadius, 0);
-                int endY = Math.Min(playerTileY + occlusionRadius, (int)tileLayer.Height - 1);
+                int startX = playerTileX - occlusionRadius;
+                int endX = playerTileX + occlusionRadius;
+                int startY = playerTileY - occlusionRadius;
+                int endY = playerTileY + occlusionRadius;
+
+                bool bgPatternExists = tileLayer.Name.Contains("Background", StringComparison.CurrentCultureIgnoreCase);
 
                 for (int y = startY; y <= endY; y++)
                 {
                     for (int x = startX; x <= endX; x++)
                     {
-                        uint index = (uint)(y * tileLayer.Width + x);
-                        uint tileId = tileData[index];
+                        if(x >= 0 && y >= 0 && x < width && y < height)
+                        {
+                            uint index = (uint)(y * tileLayer.Width + x);
+                            uint tileId = tileData[index];
 
-                        if (tileId == 0)
-                            continue;
+                            if (tileId == 0)
+                                continue;
 
-                        RenderTile(tileLayer, (uint)x, (uint)y, tileId, deltaTime);
+                            RenderTile(tileLayer, x, y, tileId, deltaTime);
+                        }
+                        // Infinite pattern (2x2 pattern on the top-right on the "Background" tile layer.
+                        else if (bgPatternExists)
+                        {
+                            int patternX = Math.Abs(x % 2);
+                            int patternY = Math.Abs(y % 2);
+
+                            uint patternTileId = 0;
+                            if (patternY < 2 && patternX < 2)
+                            {
+                                int patternTileX = patternX;
+                                int patternTileY = patternY;
+                                uint patternIndex = (uint)(patternTileY * width + patternTileX);
+
+                                if (patternIndex < tileData.Length)
+                                    patternTileId = tileData[patternIndex];
+                            }
+
+                            if (patternTileId != 0)
+                                RenderTile(tileLayer, x, y, patternTileId, deltaTime);
+                        }
                     }
                 }
             }
@@ -230,7 +259,7 @@ public partial class GameMap : View
         Raylib.EndMode2D();
     }
 
-    private void RenderTile(TileLayer layer, uint x, uint y, uint tileId, float deltaTime)
+    private void RenderTile(TileLayer layer, int x, int y, uint tileId, float deltaTime)
     {
         Tileset? tileset = GetTilesetForTile(tileId, out uint trueTileId, out int tilesetIndex);
         if (tileset == null)

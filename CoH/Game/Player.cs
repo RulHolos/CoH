@@ -28,7 +28,8 @@ public class Player : GameObject
 
     public bool CanMove = true;
 
-    private int timer = 0;
+    private int moveTimer = 0;
+    private int Timer = 0;
 
     private readonly GameMap Mappe;
 
@@ -130,9 +131,11 @@ public class Player : GameObject
             Interact(TargetPosition);
 
         if (isVirtualMoving)
-            timer++;
+            moveTimer++;
         else
-            timer = 0;
+            moveTimer = 0;
+
+        Timer++;
     }
 
     /// <summary>
@@ -224,7 +227,7 @@ public class Player : GameObject
         int animationSpeed = isRunning ? 10 : 16;
         int[] animationFrames = [0, 1, 0, 2]; // Return to first animation between each frame. (It's weird if it doesn't)
 
-        int frameIndex = (timer / animationSpeed) % animationFrames.Length;
+        int frameIndex = (moveTimer / animationSpeed) % animationFrames.Length;
         int frame = animationFrames[frameIndex];
 
         int multiplier = FacingDirection;
@@ -236,5 +239,10 @@ public class Player : GameObject
             new Rectangle(frame * 32, multiplier * 32, 32, 32),
             new Vector2((Position.X * 16) - 8, (Position.Y * 16) - 16),
             Raylib_cs.Color.White);
+    }
+
+    public override void RenderGUI(float dt)
+    {
+        //
     }
 }

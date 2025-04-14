@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "1.tmx",
+    "activeFile": "Col.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -20,11 +20,11 @@
             "scaleInDock": 2
         },
         "1.tmx": {
-            "scale": 1,
-            "selectedLayer": 2,
+            "scale": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 593,
-                "y": 490.5
+                "x": 239,
+                "y": 758.75
             }
         },
         "1.tsx": {
@@ -45,17 +45,17 @@
     "map.width": 195,
     "openFiles": [
         "0.tmx",
-        "1.tmx",
         "1.tsx",
         "Col.tsx"
     ],
     "project": "CoH.tiled-project",
     "recentFiles": [
         "0.tmx",
-        "Col.tsx",
         "1.tsx",
+        "Col.tsx",
         "1.tmx"
     ],
+    "resizeMap.removeObjects": false,
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,

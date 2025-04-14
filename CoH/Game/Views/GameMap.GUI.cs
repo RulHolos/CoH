@@ -1,4 +1,5 @@
 ﻿using CoH.Game.Views.Battles;
+using DotTiled;
 using ImGuiNET;
 using Raylib_cs;
 using rlImGui_cs;
@@ -28,7 +29,7 @@ public partial class GameMap
             if (ImGui.BeginMenu("Tools"))
             {
                 ImGui.MenuItem("Textures", string.Empty, ref RenderTextureWin);
-                ImGui.MenuItem("Ignore Collisions", string.Empty, ref IgnoreCollisions);
+                ImGui.MenuItem("Ignore Collisions", "F2", ref IgnoreCollisions);
                 if (ImGui.MenuItem("Start Battle"))
                     GoToNextView(new Battle());
 

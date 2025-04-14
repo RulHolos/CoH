@@ -17,4 +17,5 @@ public abstract class GameObject
 
     public abstract void Frame(float dt);
     public abstract void Render(float dt);
+    public virtual void RenderGUI(float dt) { }
 }
