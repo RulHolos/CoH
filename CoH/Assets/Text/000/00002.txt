@@ -1,4 +1,4 @@
 ﻿
 
 The water is calm...\b
-\cWould you like to get on the boat?
+\cWould you like to get on the boat?\q

@@ -9,12 +9,10 @@ namespace CoH.Game.Views;
 
 public partial class ConfigMenu : View
 {
-    public override ILogger Logger { get; set; }
-
     public ConfigMenu()
-        : base()
+        : base("ConfigMenu")
     {
-        Logger = Log.ForContext("Tag", "ConfigMenu");
+
     }
 
     public override void Frame(float deltaTime)

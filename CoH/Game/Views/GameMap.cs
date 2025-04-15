@@ -53,21 +53,18 @@ public partial class GameMap : View
     public Camera2D ScreenCamera = new() { Zoom = 1.0f };
     public float ScaleFactor = 4f;
     public RenderTexture2D RenderTarget;
+    public Texture2D cloud;
 
     public Vector4 BackgroundPattern { get; private set; } = Vector4.Zero;
 
-    public override ILogger Logger { get; set; }
-
     public GameMap(int mapId, bool fromSave = false)
-        : base()
+        : base($"MAP {mapId}")
     {
         MapId = mapId;
         Player = new(this);
 
         if (fromSave)
             Player.Position = SaveFile.SaveData.PositionOnMap;
-
-        Logger = Log.ForContext("Tag", $"MAP {MapId}");
     }
 
     public override void Load()
@@ -90,6 +87,8 @@ public partial class GameMap : View
 
         RenderTarget = Raylib.LoadRenderTexture((int)(MainWindow.GameViewport.X / ScaleFactor), (int)(MainWindow.GameViewport.Y / ScaleFactor));
 
+        cloud = Raylib.LoadTexture(Path.Combine(PathToMap, "Back", "cloud.png"));
+
         Logger.Debug($"Map Loaded successfully");
         Logger.Debug($"Contains {Tilesets.Count} tileset(s)");
         Logger.Debug($"Map size is {Map.Width}x{Map.Height} tiles");
@@ -97,6 +96,8 @@ public partial class GameMap : View
         Player.Load();
 
         base.Load();
+
+        DialogManager.GetDialog(1);
     }
 
     public override void Unload()
@@ -104,6 +105,8 @@ public partial class GameMap : View
         foreach (var texture in Tilesets)
             Raylib.UnloadTexture(texture);
         Raylib.UnloadRenderTexture(RenderTarget);
+
+        Raylib.UnloadTexture(cloud);
 
         Player.Unload();
         
@@ -177,9 +180,27 @@ public partial class GameMap : View
 
         Raylib.BeginTextureMode(RenderTarget);
 
-        Raylib.ClearBackground(new(Map.BackgroundColor.R, Map.BackgroundColor.G, Map.BackgroundColor.B, (byte)255));
+        Raylib.ClearBackground(new(0x57, 0x9E, 0xBB));
 
         Raylib.BeginMode2D(WorldCamera);
+
+        // ### BACKGROUND TEXTURE ### //
+        float cloudSize = cloud.Width;
+        float cloudOffsetX = this.Timer / 64;
+        int tilesX = (int)(MainWindow.GameViewport.X / cloudSize) + 3;
+        int tilesY = (int)(MainWindow.GameViewport.Y / cloudSize) + 3;
+
+        for (int y = -1; y < tilesY; y++)
+        {
+            for (int x = -1; x < tilesX; x++)
+            {
+                float drawX = x * cloudSize - (cloudOffsetX % cloudSize);
+                float drawY = y * cloudSize - (0 % cloudSize);
+                Raylib.DrawTexture(cloud, (int)drawX, (int)drawY, Raylib_cs.Color.White);
+            }
+        }
+
+        Player.RenderUpsidedown(deltaTime);
 
         // ### ACTUAL RENDERING ### //
         foreach (BaseLayer layer in Map.Layers)
@@ -204,6 +225,7 @@ public partial class GameMap : View
                 int playerTileX = (int)Player.Position.X;
                 int playerTileY = (int)Player.Position.Y;
 
+                //Vector2 occlusionX = new(playerTileX - occlusionRadius)
                 int startX = playerTileX - occlusionRadius;
                 int endX = playerTileX + occlusionRadius;
                 int startY = playerTileY - occlusionRadius;

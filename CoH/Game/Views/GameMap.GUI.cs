@@ -16,6 +16,7 @@ public partial class GameMap
 {
     private bool RenderTextureWin = false;
     public bool IgnoreCollisions = false;
+    public bool RenderDialogManager = false;
 
     public override void RenderGUI(float deltaTime)
     {
@@ -36,10 +37,18 @@ public partial class GameMap
                 ImGui.EndMenu();
             }
 
+            if (ImGui.BeginMenu("Dialog"))
+            {
+                ImGui.MenuItem("Debugger", string.Empty, ref RenderDialogManager);
+
+                ImGui.EndMenu();
+            }
+
             ImGui.EndMainMenuBar();
         }
 
         TextureWin();
+        if (RenderDialogManager) DialogManager.RenderGUI(deltaTime);
     }
 
     private void TextureWin()

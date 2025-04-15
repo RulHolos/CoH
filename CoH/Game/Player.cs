@@ -220,7 +220,7 @@ public class Player : GameObject
     }
 
     // TODO: There's some stuttering when moving sometimes. Maybe relating to the dt or the timer reseting too late or too early?
-    public override void Render(float dt)
+    public void DoRender(float dt, bool upsideDown = false)
     {
         bool isRunning = IsRunning();
 
@@ -230,15 +230,43 @@ public class Player : GameObject
         int frameIndex = (moveTimer / animationSpeed) % animationFrames.Length;
         int frame = animationFrames[frameIndex];
 
-        int multiplier = FacingDirection;
+        int facingDir = FacingDirection;
+        if (upsideDown && facingDir == 1)
+            facingDir = 2;
+        else if (upsideDown && facingDir == 2)
+            facingDir = 1;
+
+        int multiplier = facingDir;
 
         if (isRunning && isVirtualMoving)
             multiplier += 4;
 
-        Raylib.DrawTextureRec(PlayerTexture,
-            new Rectangle(frame * 32, multiplier * 32, 32, 32),
-            new Vector2((Position.X * 16) - 8, (Position.Y * 16) - 16),
-            Raylib_cs.Color.White);
+        if (!upsideDown)
+        {
+            Raylib.DrawTextureRec(PlayerTexture,
+                new Rectangle(frame * 32, multiplier * 32, 32, 32),
+                new Vector2((Position.X * 16) - 8, (Position.Y * 16) - 16),
+                Raylib_cs.Color.White);
+        }
+        else
+        {
+            Raylib.DrawTexturePro(PlayerTexture,
+                new(frame * 32, multiplier * 32, 32, 32),
+                new((Position.X * 16) - 8, (Position.Y * 16) - 16, 32, -32),
+                new(32, 64-8),
+                180f,
+                Raylib_cs.Color.White);
+        }   
+    }
+
+    public override void Render(float dt)
+    {
+        DoRender(dt);
+    }
+
+    public void RenderUpsidedown(float dt)
+    {
+        DoRender(dt, true);
     }
 
     public override void RenderGUI(float dt)

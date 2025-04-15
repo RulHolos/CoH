@@ -13,12 +13,10 @@ namespace CoH.Game.Views;
 
 public partial class MainMenu : View
 {
-    public override ILogger Logger { get; set; }
-
     public MainMenu()
-        : base()
+        : base("MainMenu")
     {
-        Logger = Log.ForContext("Tag", "MainMenu");
+
     }
 
     public override void Load()
