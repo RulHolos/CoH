@@ -1,6 +1,7 @@
 ﻿using CoH.Game.Views;
 using CoH.GameData;
 using DotTiled;
+using ImGuiNET;
 using Raylib_cs;
 using Serilog;
 using System;
@@ -12,6 +13,14 @@ using System.Threading.Tasks;
 
 namespace CoH.Game;
 
+public enum FacingDirection
+{
+    Down,
+    Left,
+    Right,
+    Up,
+}
+
 public class Player : GameObject
 {
     public Vector2 Position = Vector2.Zero; // Coords on the map.
@@ -19,7 +28,7 @@ public class Player : GameObject
     public float WalkSpeed = 4.0f; // Tiles per second
     public float RunSpeed = 8.0f; // Tiles per second
     public Texture2D PlayerTexture;
-    public sbyte FacingDirection = 0; // 0 = Down, 1 = Up, 2 = Right, 3 = Left
+    public FacingDirection FacingDirection = FacingDirection.Down;
 
     private bool isMoving = false;
     private bool isVirtualMoving = false;
@@ -60,31 +69,31 @@ public class Player : GameObject
         if (!isMoving && CanMove)
         {
             Vector2 newMovementDirection = Vector2.Zero;
-            sbyte newFacingDirection = FacingDirection;
+            FacingDirection newFacingDirection = FacingDirection;
             bool directionPressed = false;
 
             if (Raylib.IsKeyDown(KeyboardKey.Down))
             {
                 newMovementDirection = new Vector2(0, 1);
-                newFacingDirection = 0;
+                newFacingDirection = FacingDirection.Down;
                 directionPressed = true;
             }
             else if (Raylib.IsKeyDown(KeyboardKey.Up))
             {
                 newMovementDirection = new Vector2(0, -1);
-                newFacingDirection = 3;
+                newFacingDirection = FacingDirection.Up;
                 directionPressed = true;
             }
             else if (Raylib.IsKeyDown(KeyboardKey.Right))
             {
                 newMovementDirection = new Vector2(1, 0);
-                newFacingDirection = 2;
+                newFacingDirection = FacingDirection.Right;
                 directionPressed = true;
             }
             else if (Raylib.IsKeyDown(KeyboardKey.Left))
             {
                 newMovementDirection = new Vector2(-1, 0);
-                newFacingDirection = 1;
+                newFacingDirection = FacingDirection.Left;
                 directionPressed = true;
             }
 
@@ -195,7 +204,7 @@ public class Player : GameObject
                 Tileset? tileset = Mappe.GetTilesetForTile(tileId, out uint trueTileId, out _);
                 if (tileset != null)
                 {
-                    if (trueTileId == (int)TileType.Water)
+                    if (trueTileId == (int)TileType.Water && !isSwimming)
                     {
                         isSwimming = true;
                         Position = TargetPosition;
@@ -230,13 +239,13 @@ public class Player : GameObject
         int frameIndex = (moveTimer / animationSpeed) % animationFrames.Length;
         int frame = animationFrames[frameIndex];
 
-        int facingDir = FacingDirection;
-        if (upsideDown && facingDir == 1)
-            facingDir = 2;
-        else if (upsideDown && facingDir == 2)
-            facingDir = 1;
+        FacingDirection facingDir = FacingDirection;
+        if (upsideDown && facingDir == FacingDirection.Right)
+            facingDir = FacingDirection.Left;
+        else if (upsideDown && facingDir == FacingDirection.Left)
+            facingDir = FacingDirection.Right;
 
-        int multiplier = facingDir;
+        sbyte multiplier = (sbyte)facingDir;
 
         if (isRunning && isVirtualMoving)
             multiplier += 4;
@@ -271,6 +280,17 @@ public class Player : GameObject
 
     public override void RenderGUI(float dt)
     {
-        //
+        ImGui.SeparatorText("Player speed");
+
+        ImGui.SliderFloat("Player walking speed", ref WalkSpeed, 0f, 100f);
+        ImGui.SliderFloat("Player running speed", ref RunSpeed, 0f, 100f);
+
+        if (ImGui.Button("Reset player speed"))
+        {
+            WalkSpeed = 4f;
+            RunSpeed = 8f;
+        }
+
+        ImGui.Checkbox("Can Move", ref CanMove);
     }
 }

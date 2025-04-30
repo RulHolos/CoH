@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using ImGuiNET;
+using CoH.Game.Ext;
 
 namespace CoH.Game.Views;
 
@@ -49,13 +50,12 @@ public partial class GameMap : View
     public Map? Map { get; private set; } = null;
     public List<Texture2D> Tilesets { get; private set; } = [];
     public Player Player { get; private set; }
+    public ScriptedEvent? CurrentEvent { get; private set; } = new();
     public Camera2D WorldCamera = new() { Zoom = 1.0f };
     public Camera2D ScreenCamera = new() { Zoom = 1.0f };
     public float ScaleFactor = 4f;
     public RenderTexture2D RenderTarget;
     public Texture2D cloud;
-
-    public Vector4 BackgroundPattern { get; private set; } = Vector4.Zero;
 
     public GameMap(int mapId, bool fromSave = false)
         : base($"MAP {mapId}")
@@ -96,8 +96,6 @@ public partial class GameMap : View
         Player.Load();
 
         base.Load();
-
-        DialogManager.GetDialog(1);
     }
 
     public override void Unload()
@@ -209,6 +207,22 @@ public partial class GameMap : View
                 continue;
             if (layer is ObjectLayer objectLayer)
             {
+                // Have a "Object" layer. All objects renders with a z-index. The z-index value is the object position in Position.Y.
+                // If the player has a position lower than the object, then render the object before the player.
+                // Basically:
+                /*
+                 * foreach (object with position.y HIGHER than player.y)
+                 * {
+                 *   object.render()
+                 * }
+                 * 
+                 * player.Render()
+                 *  
+                 * foreach (object with position.y LOWER than player.y)
+                 * {
+                 *   object.render()
+                 * }
+                 */
                 if (objectLayer.Name.Equals("player", StringComparison.CurrentCultureIgnoreCase))
                 {
                     Player.Render(deltaTime);

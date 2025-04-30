@@ -17,6 +17,7 @@ public partial class GameMap
     private bool RenderTextureWin = false;
     public bool IgnoreCollisions = false;
     public bool RenderDialogManager = false;
+    public bool RenderEventManager = false;
 
     public override void RenderGUI(float deltaTime)
     {
@@ -34,6 +35,8 @@ public partial class GameMap
                 if (ImGui.MenuItem("Start Battle"))
                     GoToNextView(new Battle());
 
+                Player.RenderGUI(deltaTime);
+
                 ImGui.EndMenu();
             }
 
@@ -44,11 +47,19 @@ public partial class GameMap
                 ImGui.EndMenu();
             }
 
+            if (ImGui.BeginMenu("Events"))
+            {
+                ImGui.MenuItem("Debugger", string.Empty, ref RenderEventManager);
+
+                ImGui.EndMenu();
+            }
+
             ImGui.EndMainMenuBar();
         }
 
         TextureWin();
         if (RenderDialogManager) DialogManager.RenderGUI(deltaTime);
+        if (RenderEventManager) CurrentEvent?.RenderGUI(deltaTime);
     }
 
     private void TextureWin()

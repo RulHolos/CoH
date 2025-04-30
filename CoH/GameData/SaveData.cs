@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CoH.Game;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections;
@@ -21,12 +22,26 @@ public struct SaveData()
     public DateTime SaveStartedAt = DateTime.Now;
     public Vector2 PositionOnMap = Vector2.Zero;
     public int CurrentMapId = 0;
-    public sbyte FacingDir = 3; // 0 = Left, 1 = Right, 2 = Top, 3 = Bottom
+    public FacingDirection FacingDir = FacingDirection.Down;
     public Party PartyEchoes; // No more than 6.
+    public Dictionary<string, bool> Flags { get; set; } = [];
 
     public override readonly string ToString()
     {
         return $"{TrainerName} ({TrainerId}) - {(Gender ? "Female" : "Male")} at {PositionOnMap} on MAP [ID: {CurrentMapId}] Facing {FacingDir}.";
+    }
+
+    public void SetFlag(string key, bool value)
+    {
+        Flags.TryAdd(key, value);
+    }
+
+    public bool GetFlag(string key)
+    {
+        if (Flags == null)
+            Flags = []; // ????????
+        Flags.TryGetValue(key, out bool value);
+        return value;
     }
 }
 

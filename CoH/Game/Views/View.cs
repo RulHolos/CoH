@@ -44,7 +44,9 @@ public abstract class View : GUIDrawable, AssetConsumer
     /// </summary>
     public View()
         : this("")
-    { }
+    {
+
+    }
 
     /// <summary>
     /// Initializes the view.

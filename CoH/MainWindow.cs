@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Comment this line if you want to allow the use of the built-in Game Asset editor (events, echoes, trainers, ...)
+// The editor doesn't allow editing of maps, images (sprite, animation)
+#define USE_EDITOR
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +20,7 @@ using CoH.GameData;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using CoH.Assets.DataSheets;
+using CoH.Editor;
 
 namespace CoH;
 
@@ -47,6 +52,8 @@ public static class MainWindow
 
     public static View FirstView { get; private set; } = new MainMenu();
     public static View? CurrentView { get; set; }
+
+    public static GameEditor? GameEditor { get; private set; }
 
     public static ILogger CoreLogger = Log.ForContext("Tag", "Core");
 
@@ -153,6 +160,10 @@ public static class MainWindow
     /// </summary>
     private static void Startup()
     {
+#if USE_EDITOR
+        GameEditor = new();
+#endif
+
         FirstView.Load();
     }
 
@@ -168,6 +179,7 @@ public static class MainWindow
     private static void Frame(float deltaTime)
     {
         CurrentView?.Frame(deltaTime);
+        GameEditor?.Frame(deltaTime);
     }
 
     private static void AfterFrame(float deltaTime)
@@ -218,13 +230,13 @@ public static class MainWindow
 
         //ImGui.ShowDemoWindow();
 
-        // Do things.
         CurrentView?.RenderGUI(deltaTime);
+        GameEditor?.RenderGUI(deltaTime);
 
         rlImGui.End();
     }
 
-    #endregion
+#endregion
 
     public static void QuitGame()
     {

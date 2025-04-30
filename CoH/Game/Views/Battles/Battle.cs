@@ -45,7 +45,7 @@ public partial class Battle : View
     private BattleType battleType;
     private BattleState battleState;
 
-    private Tuple<AliveEcho, AliveEcho> terrainEchoes;
+    private Tuple<AliveEcho, AliveEcho>? terrainEchoes;
 
     public Battle()
         : this(BattleType.Wild)
@@ -95,7 +95,7 @@ public partial class Battle : View
     private void RawDamage(ref AliveEcho attacker, ref AliveEcho defender, SkillData skill)
     {
         //int atkStat = () ? attacker: ;
-        int defStat;
+        //int defStat;
 
         float leveldmg = ((2 * attacker.GetLevel()) / 5) + 2;
         //float powerAd = leveldmg * skill.Power * ();

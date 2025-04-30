@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Objects>
+	<Object Id="0">
+		<Position>24;23</Position>
+		<Image>Test_Img.png</Image>
+		<Event>SayThatItsLocked</Event>
+		<SavePosition>False</SavePosition>
+	</Object>
+</Objects>

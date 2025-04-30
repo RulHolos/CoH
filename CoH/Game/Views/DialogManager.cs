@@ -18,7 +18,6 @@ namespace CoH.Game.Views;
  * \p : Name of the player.
  * \b : Waits for input before continuing text.
  * \c : Clears the whole dialog box.
- * \q : Yes/No box.
  * \s : Indicates that this line and the one after are new speaker (change the speaker name and its image). First line: image, second line: speaker name.
  * \x : Change the dialog image without changing the name. Used for different expressions.
  */
@@ -27,7 +26,7 @@ namespace CoH.Game.Views;
 /// Class for managing Dialogs of a view.<br/>
 /// Every view has a DialogManager instance attached to it.
 /// </summary>
-public class DialogManager : AssetConsumer
+public class DialogManager : AssetConsumer, GUIDrawable
 {
     public virtual ILogger Logger { get; set; }
     public bool DialogFinished => false;
@@ -90,19 +89,13 @@ public class DialogManager : AssetConsumer
         if (ImGui.Begin("Dialog Debugger"))
         {
             if (ImGui.CollapsingHeader("Current Dialog"))
-            {
                 for (int i = 0; i < currentDialog?.Length; i++)
-                {
                     ImGui.Text($"({i})> {currentDialog[i]}");
-                }
-            }
+
             if (ImGui.CollapsingHeader("Parsed Current Dialog"))
-            {
                 for (int i = 0; i < currentDialog?.Length; i++)
-                {
                     ImGui.Text($"({i})> {ParseDialogLine(currentDialog[i])}");
-                }
-            }
+
             ImGui.Spacing();
             ImGui.Text($"Current line index: {lineIndex}");
             if (ImGui.Button("Reset Current Dialog"))
@@ -115,7 +108,7 @@ public class DialogManager : AssetConsumer
             ImGui.InputInt("Dialog ID", ref debugTextId);
             if (ImGui.Button("Start dialog"))
             {
-                GetDialog(debugTextId);
+                GetDialog(debugTextId, false, (y) => { });
             }
 
             ImGui.End();
@@ -126,7 +119,13 @@ public class DialogManager : AssetConsumer
     /// Gets the dialog content from the dialog id and reset the dialog manager state.
     /// </summary>
     /// <param name="id">The dialog id to display.</param>
-    public void GetDialog(int id)
+    public void GetDialog(string id, bool yesno, Action<bool> callback) => GetDialog(int.Parse(id), yesno, callback);
+
+    /// <summary>
+    /// Gets the dialog content from the dialog id and reset the dialog manager state.
+    /// </summary>
+    /// <param name="id">The dialog id to display.</param>
+    public void GetDialog(int id, bool yesno, Action<bool> callback)
     {
         string fileName = $"{id:00000}.txt";
         string filePath = Path.Combine(MainWindow.PathToResources, "Text", fileName[0..3], fileName);
@@ -140,17 +139,13 @@ public class DialogManager : AssetConsumer
             currentDialog = fileContent.Split("\n", options: StringSplitOptions.TrimEntries);
             lineIndex = 0;
 
+            callback(true);
+
             Load();
         }
         else
             Logger.Debug($"Dialog {fileName} doesn't exist");
     }
-
-    /// <summary>
-    /// Gets the dialog content from the dialog id and reset the dialog manager state.
-    /// </summary>
-    /// <param name="id">The dialog id to display.</param>
-    public void GetDialog(string id) => GetDialog(int.Parse(id));
 
     public string ParseDialogLine(string? lineToParse = null)
     {
