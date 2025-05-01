@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.Serialization;
 
 namespace CoH.GameData;
 
@@ -44,11 +45,11 @@ public class BaseEchoDataMap : ClassMap<BaseEchoData>
 /// Basically a blueprint to create an echo when starting a wild battle.
 /// </summary>
 [Serializable]
-public unsafe struct BaseEcho : GUIDrawable
+public unsafe struct BaseEcho(ushort id) : GUIDrawable
 {
-    public ushort Id;
-    public string Name;
-    public string DexName;
+    public ushort Id = id;
+    public string Name = "New Echo";
+    public string DexName = "New Echo Full Name";
     public byte Cost; // 0-3 inclusive. ((cost * 10) + 80). Also dictates the level rank. Higher cost means slower leveling.
     public fixed ushort BaseSkills[5];
     public fixed ushort ItemDropTable[4];

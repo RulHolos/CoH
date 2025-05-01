@@ -1,6 +1,6 @@
 ﻿// Comment this line if you want to allow the use of the built-in Game Asset editor (events, echoes, trainers, ...)
 // The editor doesn't allow editing of maps, images (sprite, animation)
-#define USE_EDITOR
+#define EDITOR_MODE
 
 using System;
 using System.Collections.Generic;
@@ -160,7 +160,7 @@ public static class MainWindow
     /// </summary>
     private static void Startup()
     {
-#if USE_EDITOR
+#if EDITOR_MODE
         GameEditor = new();
 #endif
 
@@ -230,7 +230,9 @@ public static class MainWindow
 
         //ImGui.ShowDemoWindow();
 
+#if !EDITOR_MODE
         CurrentView?.RenderGUI(deltaTime);
+#endif
         GameEditor?.RenderGUI(deltaTime);
 
         rlImGui.End();

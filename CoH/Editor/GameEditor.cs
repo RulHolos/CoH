@@ -7,33 +7,45 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DotTiled;
+using Serilog;
 
 namespace CoH.Editor;
 
-public class GameEditor : GUIDrawable
+public partial class GameEditor : GUIDrawable
 {
-    private bool ShowEditor = false;
+    public static ILogger Logger = Log.ForContext("Tag", "Asset Editor");
 
     public void Frame(float deltaTime)
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Delete))
-            ShowEditor = !ShowEditor;
     }
 
     public void RenderGUI(float deltaTime)
     {
-        ImGui.DockSpaceOverViewport();
+        // Doesn't allow displaying the actual game? What??!!
+        //ImGui.DockSpaceOverViewport();
 
         if (ImGui.BeginMainMenuBar())
         {
-            ImGui.BeginMenu("fd");
+            ImGui.MenuItem("Game Assets Editor", string.Empty, false, false);
+
+            if (ImGui.BeginMenu("Echoes"))
+            {
+                ImGui.MenuItem("Echo Editor", string.Empty, ref ShowEchoes);
+
+                ImGui.EndMenu();
+            }
+
+            if (ImGui.BeginMenu("Abilities & Skills"))
+            {
+                ImGui.MenuItem("Ability Editor", string.Empty);
+                ImGui.MenuItem("Skill Editor", string.Empty);
+
+                ImGui.EndMenu();
+            }
 
             ImGui.EndMainMenuBar();
         }
 
-        if (ImGui.Begin("Game Editor"))
-        {
-            ImGui.End();
-        }
+        RenderEchoes();
     }
 }

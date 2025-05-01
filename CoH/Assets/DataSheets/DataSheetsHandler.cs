@@ -19,6 +19,7 @@ public static class DataSheetsHandler
     //public static HotSheet<Item, ItemCsvMap> Items { get; private set; }
     public static List<SkillData> Skills { get; private set; } = [];
     public static List<BaseEcho> Echoes { get; private set; } = [];
+    public static List<BaseEchoData> EchoesEntry { get; private set; } = [];
     public static List<Ability> Abilities { get; private set; } = [];
 
     public static bool Load()
@@ -47,6 +48,7 @@ public static class DataSheetsHandler
         Skills.Clear();
         Abilities.Clear();
         Echoes.Clear();
+        EchoesEntry.Clear();
     }
 
     public static void Reload()
@@ -79,25 +81,43 @@ public static class DataSheetsHandler
         }
     }
 
+    public static bool SaveCsv<T, M>(string sheetFile, List<T> records) where M : ClassMap<T>
+    {
+        try
+        {
+            using var writer = new StreamWriter(Path.Combine(MainWindow.PathToResources, "DataSheets", $"{Path.ChangeExtension(sheetFile, ".csv")}"));
+            using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            csv.Context.RegisterClassMap<M>();
+
+            csv.WriteRecords(records);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Couldn't save CSV file. Reason:\n{ex}");
+            return false;
+        }
+    }
+
     private static List<BaseEcho> LoadEchoes()
     {
         string PathToEchoes = Path.Combine(MainWindow.PathToResources, "Echoes");
         List<BaseEchoData> echoData = LoadCsv<BaseEchoData, BaseEchoDataMap>("Echoes");
+        EchoesEntry = echoData;
         List<BaseEcho> actualEchoes = [];
 
         foreach (BaseEchoData echo in echoData)
         {
             try
             {
-                BaseEcho baseEcho = BaseEchoReader.ReadFromXml(Path.Combine(PathToEchoes, $"{Path.ChangeExtension(echo.FileName, ".xml")}"));
+                BaseEcho baseEcho = BaseEchoParser.ReadFromXml(Path.Combine(PathToEchoes, $"{Path.ChangeExtension(echo.FileName, ".xml")}"));
                 baseEcho.EchoDexIndex = echo.EchoDexId;
                 baseEcho.Id = echo.EchoId;
                 actualEchoes.Add(baseEcho);
             }
-            catch (Exception ex)
-            {
-                Logger.Error($"Couldn't read data for echo \"{echo.FileName}\". Reason:\n{ex}");
-            }
+            catch (FileNotFoundException) { Logger.Error($"File definition for echo \"{echo.FileName}\" doesn't exist."); }
+            catch (Exception ex) { Logger.Error($"Couldn't read data for echo \"{echo.FileName}\". Reason:\n{ex}"); }
         }
 
         return actualEchoes;

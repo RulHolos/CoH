@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Echo Name="Miko" DexName="Miko Shiko">
+  <Cost>3</Cost>
+  <Skills>
+    <Skill Id="0" />
+    <Skill Id="0" />
+    <Skill Id="0" />
+    <Skill Id="0" />
+    <Skill Id="0" />
+  </Skills>
+  <Drops>
+    <Item Id="0" />
+    <Item Id="0" />
+    <Item Id="0" />
+    <Item Id="0" />
+  </Drops>
+  <Styles>
+    <Style StyleType="Normal">
+      <Elements Element1="Void" Element2="Void" />
+      <Stats>
+        <HP>0</HP>
+        <FoAtk>0</FoAtk>
+        <FoDef>0</FoDef>
+        <SpAtk>0</SpAtk>
+        <SpDef>0</SpDef>
+        <Speed>0</Speed>
+      </Stats>
+      <Abilities Ability1="0" Ability2="0" />
+      <Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Skills>
+      <Level100Skill Id="0" />
+      <SkillCards>0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0</SkillCards>
+      <Level70Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Level70Skills>
+    </Style>
+    <Style StyleType="Normal">
+      <Elements Element1="Void" Element2="Void" />
+      <Stats>
+        <HP>0</HP>
+        <FoAtk>0</FoAtk>
+        <FoDef>0</FoDef>
+        <SpAtk>0</SpAtk>
+        <SpDef>0</SpDef>
+        <Speed>0</Speed>
+      </Stats>
+      <Abilities Ability1="0" Ability2="0" />
+      <Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Skills>
+      <Level100Skill Id="0" />
+      <SkillCards>0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0</SkillCards>
+      <Level70Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Level70Skills>
+    </Style>
+    <Style StyleType="Normal">
+      <Elements Element1="Void" Element2="Void" />
+      <Stats>
+        <HP>0</HP>
+        <FoAtk>0</FoAtk>
+        <FoDef>0</FoDef>
+        <SpAtk>0</SpAtk>
+        <SpDef>0</SpDef>
+        <Speed>0</Speed>
+      </Stats>
+      <Abilities Ability1="0" Ability2="0" />
+      <Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Skills>
+      <Level100Skill Id="0" />
+      <SkillCards>0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0</SkillCards>
+      <Level70Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Level70Skills>
+    </Style>
+    <Style StyleType="Normal">
+      <Elements Element1="Void" Element2="Void" />
+      <Stats>
+        <HP>0</HP>
+        <FoAtk>0</FoAtk>
+        <FoDef>0</FoDef>
+        <SpAtk>0</SpAtk>
+        <SpDef>0</SpDef>
+        <Speed>0</Speed>
+      </Stats>
+      <Abilities Ability1="0" Ability2="0" />
+      <Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Skills>
+      <Level100Skill Id="0" />
+      <SkillCards>0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0</SkillCards>
+      <Level70Skills>
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+        <Skill Id="0" />
+      </Level70Skills>
+    </Style>
+  </Styles>
+</Echo>
